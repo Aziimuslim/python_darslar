@@ -1,21 +1,21 @@
 #09.10.2025
 #Asqarov  Azizbek
-""" avtolar =['audi', 'bmw', 'volvo', 'kia', 'merc']
+avtolar =['audi', 'bmw', 'volvo', 'kia', 'merc']
 
 for avto in avtolar:
     if avto == 'bmw':
         print(avto.upper())
     else:
         print(avto.title())
-          """
-""" ism = input("Ismingiz nima?\n>>>")
+         
+ism = input("Ismingiz nima?\n>>>")
 if ism.lower() != 'ali':
     print(f"uzur,{ism.title()} biz Alini kutyabmiz")
 else:
-    print("Salom,Ali")     """
-""" javob = float(input("12x6 nechiga teng?>>>"))
+    print("Salom,Ali")    
+javob = float(input("12x6 nechiga teng?>>>"))
 if javob !=72:
-    print("Javob xato") """
+    print("Javob xato")
 """ 
 yosh = int(input("Yoshingiz nechada?>>>"))
 if yosh >=18:

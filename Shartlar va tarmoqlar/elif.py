@@ -1,7 +1,7 @@
 #if elif else
 #15.10.2025
 #Asqarov Azizbek
-""" yosh = int (input("Yoshingiz nechida?: "))
+yosh = int (input("Yoshingiz nechida?: "))
 if yosh<=4:
     print("Sizga[ kirish bepul")
 elif yosh<=10:
@@ -9,9 +9,9 @@ elif yosh<=10:
 elif yosh<=18:
     print("Sizga kirish 100000 so'm")
 else:
-    print("Sizga kirish 150000 so'm")  """
+    print("Sizga kirish 150000 so'm") 
 
-""" yosh = int (input("Yoshingiz nechida?: "))
+yosh = int (input("Yoshingiz nechida?: "))
 if yosh<=4:
     narh=10000
 elif yosh<=10:
@@ -20,10 +20,10 @@ elif yosh<=18:
    narh=40000
 else:
   narh=100000
-print(f"Sizga kirish {narh} so'm") """
+print(f"Sizga kirish {narh} so'm")
 
 #kun = input("Bugungi kun nima?:")
-""" if kun.lower() == 'shanba' or kun.lower() == 'yakshanba':
+if kun.lower() == 'shanba' or kun.lower() == 'yakshanba':
     print("Bugun dam olish")
 else:
     print("Bugun ish")    #or operatori yordamida ikki shattni tekshirish 
@@ -34,7 +34,7 @@ if kun.lower() == 'yakshanba' and harorat > 35:
 elif kun.lower() == 'yakshanba'  and harorat < 30:
     print("Uydan chiqmaymiz")
 else:
- print("Bilmayman")     #and operatiri yordamida ikki shart tekshirishimiz mumkin     """
+ print("Bilmayman")     #and operatiri yordamida ikki shart tekshirishimiz mumkin    
 # faqat ikki shart ham to'g'ri bo'lsa bajariladi
 """ 
 narh = 20000
