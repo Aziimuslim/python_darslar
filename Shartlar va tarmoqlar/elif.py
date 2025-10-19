@@ -1,7 +1,7 @@
 #if elif else
 #15.10.2025
 #Asqarov Azizbek
-yosh = int (input("Yoshingiz nechida?: "))
+""" yosh = int (input("Yoshingiz nechida?: "))
 if yosh<=4:
     print("Sizga[ kirish bepul")
 elif yosh<=10:
@@ -20,21 +20,20 @@ elif yosh<=18:
    narh=40000
 else:
   narh=100000
-print(f"Sizga kirish {narh} so'm")
-
-#kun = input("Bugungi kun nima?:")
+print(f"Sizga kirish {narh} so'm") """
+""" 
+kun = input("Bugungi kun nima?:")
 if kun.lower() == 'shanba' or kun.lower() == 'yakshanba':
     print("Bugun dam olish")
 else:
     print("Bugun ish")    #or operatori yordamida ikki shattni tekshirish 
- """
-""" harorat = float(input("Havo harorati qanday?:"))
+    harorat = float(input("Havo harorati qanday?:"))
 if kun.lower() == 'yakshanba' and harorat > 35:
     print("Cho'milishga ketdik")
 elif kun.lower() == 'yakshanba'  and harorat < 30:
     print("Uydan chiqmaymiz")
 else:
- print("Bilmayman")     #and operatiri yordamida ikki shart tekshirishimiz mumkin    
+ print("Bilmayman")    """  #and operatiri yordamida ikki shart tekshirishimiz mumkin    
 # faqat ikki shart ham to'g'ri bo'lsa bajariladi
 """ 
 narh = 20000
@@ -109,6 +108,26 @@ else:
     narh = 20000
 print(narh)    
 """
-son1 = int(input("Son kiriting: "))
+# Ikkita sonni solishtirish 
+""" son1 = int(input("Son kiriting: "))
 son2 = int(input("Son kiriting: "))
-    
+if son1 > son2:
+       print(f"Javob: {son1} > {son2}")
+else:
+   print(f"Javob: {son1} < {son2}") """
+# Maxsulotlar mavjudligini tekshirish
+mahsulotlar = ['go`sht','un', 'yog', 'sovun', 'tuxum', 'piyoz', 'kartoshka', 'olma','non', 'guruch',] 
+savat =[]
+bor_mahsulotlar = [] 
+mavjud_emas = []
+for n in range(5):
+    savat.append(input(f"Savatga {n+1} -maxsulotni qo`shing: "))
+      
+for mahsulot in savat:
+   
+   if mahsulot in mahsulotlar:
+        print(f"{mahsulot} mahsulot do'konimizda bor ")
+   else:
+        print(f"{mahsulot} Uzur, bu mahsulot do`konimizda yo`q ")    
+
+
