@@ -116,7 +116,7 @@ if son1 > son2:
 else:
    print(f"Javob: {son1} < {son2}") """
 # Maxsulotlar mavjudligini tekshirish
-mahsulotlar = ['go`sht','un', 'yog', 'sovun', 'tuxum', 'piyoz', 'kartoshka', 'olma','non', 'guruch',] 
+""" mahsulotlar = ['go`sht','un', 'yog', 'sovun', 'tuxum', 'piyoz', 'kartoshka', 'olma','non', 'guruch',] 
 savat =[]
 bor_mahsulotlar = [] 
 mavjud_emas = []
@@ -130,4 +130,37 @@ for mahsulot in savat:
    else:
         print(f"{mahsulot} Uzur, bu mahsulot do`konimizda yo`q ")    
 
+ """
+#Maxsulotlarni bor va mavjud emasligini alohida ro'yxatga yozish
+""" mahsulotlar = ['go`sht','un', 'yog', 'sovun', 'tuxum', 'piyoz', 'kartoshka', 'olma','non', 'guruch',] 
+savat =[]
+bor_mahsulotlar = [] 
+mavjud_emas = []
+for n in range(5):
+    savat.append(input(f"Savatga {n+1} -maxsulotni qo`shing: "))
+      
+for mahsulot in savat:
+   
+   if mahsulot in mahsulotlar:
+        bor_mahsulotlar.append(mahsulot)
+   else:
+        mavjud_emas.append(mahsulot) 
+print(f"Do'konda bor mahsulotlar: {bor_mahsulotlar}")
+print(f"Do'konda mavjud emas; {mavjud_emas}")         
+ """
 
+# Foydalanuvchidan login so'rash va tekshirish
+""" foydalanuvchilar = [ 'asqarov','ali','admin','azizbek','lisa']
+login = input("Foydalanuvchi login kiriting: ")
+if login.lower() in foydalanuvchilar:
+    print("Login band, yangi login tanlang!")
+else:
+    print("Xush kelibsiz!")     """\
+
+# istalgan son so'rang va kiritgan son 2 dan 10 gacha bo'lgan istalgan songa qoldiqsiz bo'linsin
+son = int(input("Istalgan son kiriting: "))
+for n  in range(2,11):
+    if son%n == 0:
+        print(f"{son} soni {n} ga qoldiqsiz bo'linadi.")
+    
+        
