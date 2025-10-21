@@ -20,7 +20,7 @@ print(f"{talaba['ism'].title()},\
 print(talaba)'''
 
 #Bo'shlug'at yaratish
-
+'''
 talaba_1 = {}
 talaba_1['ism'] = 'kamoliddin'
 talaba_1['kursi'] = 3
@@ -35,3 +35,44 @@ print(f"Talaba {talaba_1['ism'].title()} {talaba_1['kursi']} -kurs, yoshi {talab
 #Kalit so'z-qiymat juftligini o'chirish
 del talaba_1['yoshi']
 print(talaba_1)
+'''
+
+#Lug'atni qatorlarga bo'lish
+'''
+telefonlar = {
+    'ali':'iphone x',
+    'diyor':'samsung s22',
+    'sardor':'samsung a51',
+    'kamoliddin':'redmi note 13 pro' 
+    }  
+print(telefonlar)
+
+#get() metodi
+
+phone = telefonlar['ali']
+print(f"Alining teleoni {phone}")
+
+#phone = telefonlar.get('hasan','Bunday ism mavjud emas')
+phone = telefonlar.get('hasan') #get() metodida 2 chi argumentni taslab ketsak None qaytaradi
+print(phone)
+'''
+#Amaliyot \
+#oila a'zolari haqida lug'at yaratish
+""" 
+dadam = {'ism':'jumaboy', 'yili':1957, 'tug`ilgan_joyi':'qaraqalpog`iston'}
+print(f"Dadamning ismi {dadam['ism'].title()},\
+ {dadam['yili']}-yilda,\
+ {dadam['tug`ilgan_joyi'].title()}da tug`ilgan") """
+
+#oila a'zolari Yoqtirgan taomlari haqida lug'at yaratish
+""" 
+toamlar = {
+    'dadam':'osh', 
+    'onam':'beshbarmoq',
+    'akam':'tuxum barak',
+    'oyapam':'manti',
+    'men':'gumma' }
+print(f"Akamning sevimli taomi {toamlar['akam'].title()}")
+print(f"Onamning sevimli taomi {toamlar['onam'].title()}")
+print(f"Dadamning sevimli taomi {toamlar['dadam'].title()}") """
+
