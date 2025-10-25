@@ -65,7 +65,7 @@ print(f"Dadamning ismi {dadam['ism'].title()},\
  {dadam['tug`ilgan_joyi'].title()}da tug`ilgan") """
 
 #oila a'zolari Yoqtirgan taomlari haqida lug'at yaratish
-""" 
+
 toamlar = {
     'dadam':'osh', 
     'onam':'beshbarmoq',
@@ -74,5 +74,5 @@ toamlar = {
     'men':'gumma' }
 print(f"Akamning sevimli taomi {toamlar['akam'].title()}")
 print(f"Onamning sevimli taomi {toamlar['onam'].title()}")
-print(f"Dadamning sevimli taomi {toamlar['dadam'].title()}") """
+print(f"Dadamning sevimli taomi {toamlar['dadam'].title()}") 
 

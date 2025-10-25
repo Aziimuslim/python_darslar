@@ -30,7 +30,7 @@ for k, q in telefonlar.items():
     print(f"{k.title()}ning telefoni {q.title()}")'''
 
 #.keys() metodi 
-
+'''
 mahsulotlar = { #Do'kon mahsulotlari lug'ati
     'olma':10000,
     'anor':20000,
@@ -44,6 +44,14 @@ mahsulotlar = { #Do'kon mahsulotlari lug'ati
 #    print(mahsulot.title())
 
 bozorlik = ['anor','uzum','non','olma']
+
 for mahsulot in mahsulotlar:
     if mahsulot in bozorlik:
         print(f"{mahsulot.title()} {mahsulotlar[mahsulot]} so'm")
+
+#Do'konda yo'q mahsulotlarni tekshirish
+for buyum in bozorlik:
+    if buyum not in mahsulotlar:
+        print(f"Kechirasiz, do'konimizda {buyum} yo`q")'''
+
+#.values()metodi
