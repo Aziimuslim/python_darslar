@@ -58,11 +58,11 @@ print(phone)
 '''
 #Amaliyot \
 #oila a'zolari haqida lug'at yaratish
-""" 
+
 dadam = {'ism':'jumaboy', 'yili':1957, 'tug`ilgan_joyi':'qaraqalpog`iston'}
 print(f"Dadamning ismi {dadam['ism'].title()},\
  {dadam['yili']}-yilda,\
- {dadam['tug`ilgan_joyi'].title()}da tug`ilgan") """
+ {dadam['tug`ilgan_joyi'].title()}da tug`ilgan")
 
 #oila a'zolari Yoqtirgan taomlari haqida lug'at yaratish
 
