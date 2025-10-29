@@ -139,7 +139,46 @@ for ism, info in hamkasblar.items():
         print(til.upper())   '''
 
 #Amaliyot
+#Adabiyot (ilm-fan, san'at, internet) olamidagi 4 ta mashxur shaxlar haqidagi ma'lumotlarni lug'at ko'rinishida saqlang. Lug'atlarni bitta ro'yxatga joylang, va har bir shaxs haqidagi ma'lumotni konsolga chiqaring.
+# 4 ta mashhur shaxs haqidagi ma'lumotlarni lug'atlarda saqlaymiz
+shaxs1 = {
+    "ism": "Alisher Navoiy",
+    "soha": "Adabiyot",
+    "asarlar": ["Xamsa", "Lison ut-Tayr", "Mahbub ul-Qulub"],
+    "davr": "15-asr"
+}
 
+shaxs2 = {
+    "ism": "Albert Eynshteyn",
+    "soha": "Ilm-fan (fizika)",
+    "asarlar": ["Nisbiylik nazariyasi", "Brown harakati haqida tadqiqotlar"],
+    "davr": "20-asr"
+}
+
+shaxs3 = {
+    "ism": "Leonardo da Vinci",
+    "soha": "San'at va ilm-fan",
+    "asarlar": ["Mona Liza", "So‘nggi kechki ovqat", "Vitriviy odam"],
+    "davr": "15–16-asrlar"
+}
+
+shaxs4 = {
+    "ism": "Mark Zukerberg",
+    "soha": "Internet texnologiyalari",
+    "asarlar": ["Facebook asoschisi"],
+    "davr": "21-asr"
+}
+
+# Lug‘atlarni bitta ro‘yxatga joylaymiz
+mashhur_shaxslar = [shaxs1, shaxs2, shaxs3, shaxs4]
+
+# Har bir shaxs haqidagi ma’lumotni konsolga chiqaramiz
+for shaxs in mashhur_shaxslar:
+    print(f"Ism: {shaxs['ism']}")
+    print(f"Soha: {shaxs['soha']}")
+    print(f"Asarlar: {', '.join(shaxs['asarlar'])}")
+    print(f"Davr: {shaxs['davr']}")
+    print("-" * 40)
 
 
 
