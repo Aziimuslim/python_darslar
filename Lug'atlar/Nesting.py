@@ -141,7 +141,7 @@ for ism, info in hamkasblar.items():
 #Amaliyot
 #Adabiyot (ilm-fan, san'at, internet) olamidagi 4 ta mashxur shaxlar haqidagi ma'lumotlarni lug'at ko'rinishida saqlang. Lug'atlarni bitta ro'yxatga joylang, va har bir shaxs haqidagi ma'lumotni konsolga chiqaring.
 # 4 ta mashhur shaxs haqidagi ma'lumotlarni lug'atlarda saqlaymiz
-shaxs1 = {
+""" shaxs1 = {
     "ism": "Alisher Navoiy",
     "soha": "Adabiyot",
     "asarlar": ["Xamsa", "Lison ut-Tayr", "Mahbub ul-Qulub"],
@@ -178,9 +178,22 @@ for shaxs in mashhur_shaxslar:
     print(f"Soha: {shaxs['soha']}")
     print(f"Asarlar: {', '.join(shaxs['asarlar'])}")
     print(f"Davr: {shaxs['davr']}")
-    print("-" * 40)
+    print("-" * 40)  """                  
 
 
+# Oila a'zolaringizning sevimli kino-seriallarini so‘rash va lug‘atda saqlash
+
+family_movies = {}
+
+for i in range(3):
+    name = input(f"{i+1}-oila a'zosining ismini kiriting: ")
+    movies = input(f"{name}ning 3 ta sevimli kino yoki seriallarini vergul bilan ajratib kiriting: ")
+    movie_list = [m.strip() for m in movies.split(',')]
+    family_movies[name] = movie_list
+
+print("\nOila a'zolaringizning sevimli kino-seriallari:")
+for name, movies in family_movies.items():
+    print(f"{name}: {movies}")
 
 
 
