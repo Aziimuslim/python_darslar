@@ -91,9 +91,58 @@ dasturchilar = {
     'hasan':['c++','c#']
 }
 
-for ism, tillar in dasturchilar.items():
+#har bir matindan keyin yangi qator tashlab yozadi.
+'''for ism, tillar in dasturchilar.items():
     print(f"\n{ism.title()} quyidagi dasturlash tillarini biladi:")
     for til in tillar:
-        print(til.upper())
+        print(til.upper())'''
+
+#print()funktsiyasi har bir matn so'ng yangiqator tashlash oldini olish.
+'''for ism, tillar in dasturchilar.items():
+    print(f"\n{ism.title()} quiydagi dasturlash tillarini biladi: ", end='')
+    for til in tillar:
+        print(f'{til.upper()}', end='')'''
+
+#LUG'AT ICHIDA LUG'AT
+'''
+hamkasblar ={
+    'sardor':{
+    'familiya':'qaxramonov',
+    'tyil':2006,
+    'malumot':'orta-mahsus',
+    'tillar':['c++','python']
+    },
+    
+    'kamoliddin':{
+        'familiya':'rahimjanov',
+        'tyil':2005,
+        'malumot':'mahsus',
+        'tillar':['python','nodejs','html']
+    },
+
+    'diyor':{
+        'familiya':'salimov',
+        'tyil':2006,
+        'malumot':'orta',
+        'tillar':['c++','html']
+    }
+
+}
+
+for ism, info in hamkasblar.items():
+    print(f"\n{ism.title()} {info['familiya'].title()}, "
+        f"{info['tyil']}-yilda tug'olgan. "
+        f"Ma`lumoti: {info['malumot']}. \n"
+        "Quyidagi dasaturlash tillarini biladi:")
+    
+    for til in info['tillar']:
+        print(til.upper())   '''
+
+#Amaliyot
+
+
+
+
+
 
         
