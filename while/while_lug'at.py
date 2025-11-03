@@ -97,4 +97,25 @@ for mahsulot, narx in mahsulotar.items():
     print(f"{mahsulot.title()} {narx} yoshda")
 '''
 
+#Yuqoridagi ikki dasturni jamlaymiz. Foydalanuvchi buyurtmasi ro'yxatidagi har bir mahsulotni e-bozordagi mahsulotlar bilan solishitiring (tayyor ro'yxat ishlatishingiz mumkin). Agar mahsuot e-bozorda mavjud bo'lsa mahuslot narhini chiqaring, aks holda "Bizda bu mahsulot yo'q" degan xabarni kor'sating.
+
+# E-bozor mahsulotlari (tayyor ro‘yxat)
+bozor = {
+    'olma': 12000,
+    'banan': 18000,
+    'apelsin': 15000,
+    'non': 4000,
+    'sut': 9000,
+    'tuxum': 1500
+}
+
+# Foydalanuvchi buyurtmasi
+buyurtma = ['olma', 'tuxum', 'kofe', 'non']
+
+# Har bir mahsulotni tekshirish
+for mahsulot in buyurtma:
+    if mahsulot in bozor:
+        print(f"{mahsulot.capitalize()} narxi: {bozor[mahsulot]} so'm")
+    else:
+        print(f"Bizda {mahsulot} yo'q.")
 
