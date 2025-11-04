@@ -83,10 +83,57 @@ kub_kv(2)
 kub_kv(4) '''
 
 #Foydalanuvchidan son olib, son juft yoki toqligini konsolga chiqaruvchi funksiya yozing.
+'''
 def juft_toq(son):
     """Juft va Toqlika tekshirish."""
     print(f"Son juft {son%2==0}\n"
           f"Son toq {son%2!=0}")
     
 juft_toq(2)    
-juft_toq(5)
+juft_toq(5) '''
+
+#Foydalanuvchidan ikkita son olib, ulardan kattasini konsolga chiqaruvchi funksiya yozing. Agar sonlar teng bo'lsa "Sonlar teng" degan xabarni chiqaring.
+'''
+def katta_sonni_top():
+    a = float(input("Birinchi sonni kiriting: "))
+    b = float(input("Ikkinchi sonni kiriting: "))
+    
+    if a > b:
+        print(f"Katta son: {a}")
+    elif b > a:
+        print(f"Katta son: {b}")
+    else:
+        print("Sonlar teng")
+
+# Funksiyani chaqirish
+katta_sonni_top()
+'''
+#Foydalanuvchidan x va y sonlarini olib, xy ni konsolga chiqaruvchi funksiya yozing
+'''
+def x_y(x,y):
+    """x ning y darajasini hisoblash."""
+    print(f"x ning y darajasi {x**y}")
+
+x_y(2,3)    
+x_y(5,2)  '''
+'''
+#Yuqoridagi funksiyada y uchun 2 standart qiymatini bering.
+def x_y(x,y=2):
+    print(x**y)
+
+x_y(4,2)
+x_y(5)
+x_y(6)  '''
+
+def bolishni_tekshirish():
+    son = int(input("Sonni kiriting: "))
+
+    for i in range(2,11):
+        if son % i == 0:
+            print(f"{son} {i} ga qoldiqsiz bo'linadi.")
+             
+        else:
+            print(f"{son} {i} ga qoldiqsiz bo'lnmaydi.")     
+
+
+bolishni_tekshirish()
