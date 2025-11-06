@@ -1,8 +1,13 @@
 #O`zgaruvchiliar 
+#Asqarov Azizbek
 
-# ism = "Azizbek"
-# Yosh = 20 
-# Jinsi = "Erkak" 
+
+ism = "Azizbek"
+Yosh = 20 
+Jinsi = "Erkak" 
+Yili =2005
+
+print(Yili)
 
 # print(ism)
 # print(Yosh)
