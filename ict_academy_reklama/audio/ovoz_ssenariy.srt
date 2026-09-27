@@ -1,0 +1,28 @@
+1
+00:00:00,400 --> 00:00:06,200
+Sun’iy intellekt va Data Science sohasini chuqur o‘rganib, real AI loyihalar yaratmoqchimisiz?
+
+2
+00:00:06,600 --> 00:00:11,300
+Unda ICT ACADEMY’dagi AI & Data Science Engineering kursi aynan siz uchun!
+
+3
+00:00:11,800 --> 00:00:20,300
+Kursni boshlash uchun Python Basic bilimlari, shuningdek matematika, statistika va ehtimollar nazariyasi bo‘yicha boshlang‘ich bilim talab qilinadi.
+
+4
+00:00:20,800 --> 00:00:32,000
+Kurs davomida Python va ma’lumotlar tahlilidan boshlab, Machine Learning, Deep Learning, NLP, LLM, Computer Vision, Prompt Engineering hamda Git va GitHub bilan ishlashni o‘rganasiz.
+
+5
+00:00:32,600 --> 00:00:40,100
+Eng muhimi, kurs faqat nazariya bilan cheklanmaydi. Siz real AI va Data Science loyihalarini yaratib, amaliy tajriba orttirasiz.
+
+6
+00:00:40,600 --> 00:00:47,300
+Kurs yakunida mustaqil AI va Data Science loyihalarini ishlab chiqish va ularni amaliyotda qo‘llash ko‘nikmasiga ega bo‘lasiz.
+
+7
+00:00:47,800 --> 00:00:54,800
+Joylar soni cheklangan! Hoziroq ICT ACADEMY bilan bog‘laning va AI hamda Data Science bo‘yicha o‘rganishni boshlang!
+

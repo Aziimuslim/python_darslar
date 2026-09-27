@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICT ACADEMY — AI & Data Science Engineering reklama</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<script src="audio/ovoz_env.js" onerror="window.VOICE_ENV=null"></script>
+<style>
+  :root{
+    --bg0:#030814; --bg1:#061531; --cyan:#22d3ee; --cyan2:#67e8f9; --blue:#2563eb;
+    --blue2:#3b82f6; --violet:#7c3aed; --ink:#e6f6ff; --muted:#8fb3d9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#000;overflow:hidden}
+  body{font-family:Montserrat, "DejaVu Sans", sans-serif;color:var(--ink)}
+  #fit{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;
+    background:radial-gradient(120% 70% at 50% 35%, #0b2350 0%, var(--bg1) 40%, var(--bg0) 100%);
+    transform-origin:center center}
+  body.render #fit{position:static;display:block}
+  canvas#bg{position:absolute;inset:0}
+  .abs{position:absolute}
+  #world{position:absolute;inset:0;transform-origin:540px 1100px}
+  #charWrap{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:540px 1920px}
+  #char{position:absolute;left:160px;top:660px;width:760px;height:1013px;overflow:visible}
+  .glow{text-shadow:0 0 18px rgba(34,211,238,.85),0 0 42px rgba(37,99,235,.7)}
+  .title{font-weight:900;letter-spacing:.02em;line-height:1.02;text-align:center}
+  .grad{background:linear-gradient(180deg,#fff 0%,#bff6ff 45%,#22d3ee 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .chip{display:flex;align-items:center;gap:18px;padding:0 28px;height:88px;border-radius:22px;
+    background:linear-gradient(135deg,rgba(14,40,82,.88),rgba(8,22,50,.88));
+    border:2px solid rgba(34,211,238,.65);box-shadow:0 0 22px rgba(34,211,238,.35), inset 0 0 22px rgba(34,211,238,.12);
+    font-weight:700;font-size:36px;color:#eafcff;white-space:nowrap}
+  .chip .ic{font-size:40px;width:52px;text-align:center}
+  .holo{border:2px solid rgba(34,211,238,.7);border-radius:26px;
+    background:linear-gradient(160deg,rgba(10,45,90,.78),rgba(4,16,40,.82));
+    box-shadow:0 0 40px rgba(34,211,238,.35), inset 0 0 40px rgba(34,211,238,.10)}
+  .holo .bar{height:46px;border-bottom:1px solid rgba(34,211,238,.4);display:flex;align-items:center;gap:10px;padding:0 20px;
+    font:600 22px 'JetBrains Mono',monospace;color:var(--cyan2)}
+  .dot{width:13px;height:13px;border-radius:50%;background:#22d3ee;opacity:.8}
+  .dot:nth-child(2){background:#3b82f6}.dot:nth-child(3){background:#a78bfa}
+  .code{font:500 27px/1.55 'JetBrains Mono',monospace;color:#cfefff;padding:18px 26px;white-space:pre}
+  .k{color:#7dd3fc}.s{color:#86efac}.f{color:#fcd34d}.c{color:#64748b}.n{color:#f9a8d4}
+  #subs{position:absolute;left:60px;right:60px;top:1712px;min-height:128px;display:flex;align-items:center;justify-content:center;
+    padding:16px 30px;border-radius:26px;background:rgba(2,8,22,.72);border:1.5px solid rgba(34,211,238,.35);
+    font-weight:700;font-size:40px;line-height:1.28;text-align:center;color:#dbeafe;backdrop-filter:blur(6px)}
+  #subs .w{transition:none}
+  #subs .on{color:#fff;text-shadow:0 0 14px rgba(34,211,238,.9)}
+  #subs .done{color:#e0f2fe}
+  #subs .todo{color:rgba(219,234,254,.5)}
+  #flash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(160,240,255,.95),rgba(34,211,238,.35) 40%,transparent 70%);opacity:0}
+  #sweep{position:absolute;top:-200px;bottom:-200px;width:320px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(103,232,249,.28),rgba(255,255,255,.55),rgba(103,232,249,.28),transparent);transform:skewX(-18deg);opacity:0}
+  #vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.55) 100%)}
+  .check{display:flex;align-items:center;gap:22px;font-weight:800;font-size:46px;height:96px;padding:0 34px;border-radius:24px;
+    background:linear-gradient(90deg,rgba(12,48,96,.85),rgba(6,20,48,.6));border-left:6px solid var(--cyan);box-shadow:0 0 26px rgba(34,211,238,.25)}
+  .check b{display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;border-radius:50%;
+    background:#22d3ee;color:#03203a;font-size:40px;box-shadow:0 0 18px #22d3ee}
+  .tag{font-weight:900;font-size:40px;padding:14px 26px;border-radius:16px;letter-spacing:.03em;
+    background:linear-gradient(90deg,#0ea5e9,#2563eb);box-shadow:0 0 26px rgba(14,165,233,.6);color:#fff;white-space:nowrap}
+  .cta-row{display:flex;align-items:center;gap:22px;font-weight:800;font-size:44px;height:92px;padding:0 30px;white-space:nowrap}
+  .cta-row .e{font-size:46px;width:60px;text-align:center}
+  #controls{position:fixed;left:10px;bottom:10px;display:flex;gap:8px;align-items:center;font:14px sans-serif;color:#fff;z-index:9}
+  body.render #controls{display:none}
+  #controls button{padding:6px 12px}
+</style>
+</head>
+<body>
+<div id="fit"><div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+
+  <!-- floating technology icons (background, parallax) -->
+  <div id="bgIcons" class="abs" style="inset:0">
+    <!-- AI brain -->
+    <svg id="brain" class="abs" style="left:315px;top:500px;width:450px;height:390px" viewBox="0 0 500 430">
+      <defs><radialGradient id="bgGlow"><stop offset="0" stop-color="#22d3ee" stop-opacity=".35"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></radialGradient></defs>
+      <ellipse cx="250" cy="215" rx="250" ry="215" fill="url(#bgGlow)"/>
+      <path d="M248 60 C200 20 120 40 110 100 C60 110 40 170 70 210 C40 250 60 320 120 330 C140 390 220 400 248 360 Z" fill="none" stroke="#67e8f9" stroke-width="5" opacity=".9"/>
+      <path d="M252 60 C300 20 380 40 390 100 C440 110 460 170 430 210 C460 250 440 320 380 330 C360 390 280 400 252 360 Z" fill="none" stroke="#67e8f9" stroke-width="5" opacity=".9"/>
+      <g id="brainNet" stroke="#22d3ee" stroke-width="2.5" opacity=".85"></g>
+    </svg>
+    <!-- Python logo -->
+    <svg id="pyBg" class="abs" style="left:40px;top:760px;width:170px;height:170px" viewBox="0 0 110 110">
+      <path d="M54 6c-24 0-23 10-23 10v11h24v4H22S6 29 6 54s14 24 14 24h9V66s-1-14 13-14h24s13 0 13-13V18S71 6 54 6zm-13 7a4 4 0 110 8 4 4 0 010-8z" fill="#3b82f6"/>
+      <path d="M56 104c24 0 23-10 23-10V83H55v-4h33s16 2 16-23-14-24-14-24h-9v12s1 14-13 14H44s-13 0-13 13v21s-2 12 25 12zm13-7a4 4 0 110-8 4 4 0 010 8z" fill="#facc15"/>
+    </svg>
+    <!-- Database -->
+    <svg id="dbBg" class="abs" style="left:880px;top:780px;width:150px;height:170px" viewBox="0 0 100 115" fill="none" stroke="#67e8f9" stroke-width="4">
+      <ellipse cx="50" cy="16" rx="40" ry="12"/><path d="M10 16v80c0 7 18 12 40 12s40-5 40-12V16"/><path d="M10 43c0 7 18 12 40 12s40-5 40-12M10 70c0 7 18 12 40 12s40-5 40-12"/>
+    </svg>
+    <!-- Data chart -->
+    <svg id="chartBg" class="abs" style="left:60px;top:170px;width:230px;height:170px" viewBox="0 0 230 170">
+      <rect x="1" y="1" width="228" height="168" rx="16" fill="rgba(8,30,70,.55)" stroke="#22d3ee" stroke-opacity=".6"/>
+      <g id="chartBars" fill="#22d3ee"></g>
+      <polyline id="chartLine" fill="none" stroke="#a78bfa" stroke-width="4" points=""/>
+    </svg>
+    <!-- ML scatter / gear -->
+    <svg id="mlBg" class="abs" style="left:800px;top:190px;width:230px;height:170px" viewBox="0 0 230 170">
+      <rect x="1" y="1" width="228" height="168" rx="16" fill="rgba(8,30,70,.55)" stroke="#22d3ee" stroke-opacity=".6"/>
+      <g id="scatter"></g>
+      <line x1="20" y1="150" x2="210" y2="25" stroke="#f472b6" stroke-width="3" stroke-dasharray="8 6"/>
+      <text x="16" y="30" fill="#67e8f9" font-family="JetBrains Mono" font-size="17">ML model</text>
+    </svg>
+  </div>
+
+  <div id="world">
+    <!-- ============ SCENE LAYERS BEHIND CHARACTER ============ -->
+    <!-- S6 portfolio behind -->
+    <div id="s6back" class="abs" style="inset:0">
+      <div id="ghWin" class="holo abs" style="left:90px;top:520px;width:600px;height:420px">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp;GitHub Portfolio</div>
+        <div style="padding:18px 22px">
+          <div id="contrib" style="display:grid;grid-template-columns:repeat(26,1fr);gap:4px"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;font:600 22px 'JetBrains Mono',monospace">
+            <div class="repo">📁 ai-chatbot</div><div class="repo">📁 rag-system</div>
+            <div class="repo">📁 cv-detection</div><div class="repo">📁 ml-models</div>
+          </div>
+        </div>
+      </div>
+      <div id="projWin" class="holo abs" style="left:560px;top:600px;width:440px;height:330px">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp;project.ipynb</div>
+        <svg viewBox="0 0 440 280" width="440" height="280">
+          <polyline points="30,230 90,190 150,205 210,140 270,150 330,90 400,60" fill="none" stroke="#22d3ee" stroke-width="5"/>
+          <polyline points="30,240 90,220 150,225 210,190 270,180 330,150 400,130" fill="none" stroke="#a78bfa" stroke-width="4" stroke-dasharray="10 7"/>
+          <text x="30" y="40" fill="#bae6fd" font-family="JetBrains Mono" font-size="20">accuracy ↑   loss ↓</text>
+        </svg>
+      </div>
+      <div id="certWin" class="abs" style="left:300px;top:380px;width:480px;height:300px;border-radius:18px;
+        background:linear-gradient(135deg,#0b2a55,#071a3a);border:3px solid #fcd34d;box-shadow:0 0 40px rgba(252,211,77,.35);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center">
+        <div style="font-size:54px">🏅</div>
+        <div style="font-weight:900;font-size:36px;letter-spacing:.14em;color:#fde68a">SERTIFIKAT</div>
+        <div style="font-weight:800;font-size:26px;color:#e0f2fe">ICT ACADEMY</div>
+        <div style="font-weight:600;font-size:21px;color:#bae6fd">AI &amp; Data Science Engineering</div>
+      </div>
+    </div>
+
+    <!-- S7 logo behind -->
+    <div id="s7back" class="abs" style="left:0;top:0;width:1080px;height:1920px"></div>
+
+    <!-- ============ CHARACTER ============ -->
+    <div id="charWrap">
+      <svg id="char" viewBox="0 0 600 800">
+        <defs>
+          <linearGradient id="shirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2f57"/><stop offset="1" stop-color="#0c1730"/></linearGradient>
+          <linearGradient id="sleeve" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#101d3b"/><stop offset=".5" stop-color="#1c3260"/><stop offset="1" stop-color="#101d3b"/></linearGradient>
+          <radialGradient id="skin" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#f1c6a2"/><stop offset=".7" stop-color="#e2ae88"/><stop offset="1" stop-color="#cf9572"/></radialGradient>
+          <linearGradient id="neck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b87c5a"/><stop offset=".45" stop-color="#d9a37f"/></linearGradient>
+          <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1f19"/><stop offset="1" stop-color="#120c09"/></linearGradient>
+          <radialGradient id="rim" cx=".5" cy=".5" r=".5"><stop offset=".6" stop-color="#22d3ee" stop-opacity="0"/><stop offset="1" stop-color="#22d3ee" stop-opacity=".45"/></radialGradient>
+          <clipPath id="mouthClip"><path id="mouthClipPath" d=""/></clipPath>
+        </defs>
+        <!-- back glow -->
+        <ellipse cx="300" cy="420" rx="300" ry="380" fill="url(#rim)" opacity=".55"/>
+        <!-- torso -->
+        <path d="M40,810 L55,625 Q68,548 165,520 L242,497 L358,497 L435,520 Q532,548 545,625 L560,810 Z" fill="url(#shirt)"/>
+        <!-- cyan piping on shoulders -->
+        <path d="M120,548 Q180,522 245,505" stroke="#22d3ee" stroke-width="3" fill="none" opacity=".85"/>
+        <path d="M480,548 Q420,522 355,505" stroke="#22d3ee" stroke-width="3" fill="none" opacity=".85"/>
+        <!-- neck -->
+        <path d="M258,410 L342,410 L350,505 L300,560 L250,505 Z" fill="url(#neck)"/>
+        <!-- inner collar (t-shirt shadow) -->
+        <path d="M250,503 L300,568 L350,503 L338,500 L300,548 L262,500 Z" fill="#0a1328"/>
+        <!-- collar flaps -->
+        <path d="M244,494 L300,572 L262,592 L214,522 Z" fill="#1d355f" stroke="#22d3ee" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M356,494 L300,572 L338,592 L386,522 Z" fill="#1d355f" stroke="#22d3ee" stroke-width="3" stroke-linejoin="round"/>
+        <!-- placket + buttons -->
+        <path d="M300,572 L300,810" stroke="#0a142b" stroke-width="10"/>
+        <path d="M306,580 L306,810" stroke="#22d3ee" stroke-width="2.5" opacity=".75"/>
+        <circle cx="300" cy="630" r="6" fill="#67e8f9"/><circle cx="300" cy="700" r="6" fill="#67e8f9"/><circle cx="300" cy="770" r="6" fill="#67e8f9"/>
+        <!-- chest pocket -->
+        <path d="M372,610 L442,610 L442,672 Q407,684 372,672 Z" fill="none" stroke="#22d3ee" stroke-width="2.5" opacity=".7"/>
+        <!-- small glowing badge -->
+        <circle cx="198" cy="625" r="11" fill="#22d3ee" opacity=".9"/><circle cx="198" cy="625" r="20" fill="#22d3ee" opacity=".18"/>
+
+        <!-- HEAD -->
+        <g id="head" style="transform-origin:300px 470px">
+          <ellipse cx="186" cy="350" rx="20" ry="35" fill="#d9a37f"/><ellipse cx="189" cy="352" rx="10" ry="20" fill="#c08563"/>
+          <ellipse cx="414" cy="350" rx="20" ry="35" fill="#d9a37f"/><ellipse cx="411" cy="352" rx="10" ry="20" fill="#c08563"/>
+          <path id="face" d="M300,205 C388,205 420,268 418,345 C416,420 385,468 345,494 Q300,520 255,494 C215,468 184,420 182,345 C180,268 212,205 300,205 Z" fill="url(#skin)"/>
+          <!-- jaw shading -->
+          <path d="M205,420 C225,470 260,500 300,506 C340,500 375,470 395,420 C380,470 345,500 300,512 C255,500 220,470 205,420 Z" fill="#b97a58" opacity=".35"/>
+          <!-- hair -->
+          <path d="M180,338 C166,232 222,160 306,158 C392,156 438,214 422,338 C416,300 404,268 386,250 C352,262 292,262 244,238 C216,254 196,286 188,338 Z" fill="url(#hair)"/>
+          <path d="M244,238 C270,196 332,186 382,212 C352,200 300,202 262,232 Z" fill="#3a2a20" opacity=".7"/>
+          <path d="M386,250 C396,236 404,224 408,210" stroke="#3a2a20" stroke-width="4" fill="none" opacity=".6"/>
+          <!-- brows -->
+          <path id="browL" d="M218,302 Q250,284 284,296" stroke="#1d140f" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path id="browR" d="M316,296 Q350,284 382,302" stroke="#1d140f" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <!-- eyes -->
+          <g id="eyeL" style="transform-origin:251px 334px">
+            <path d="M222,334 Q251,313 280,334 Q251,350 222,334 Z" fill="#fbfbff"/>
+            <g class="iris"><circle cx="251" cy="333" r="12.5" fill="#4a2c1a"/><circle cx="251" cy="333" r="6" fill="#120905"/><circle cx="255" cy="328" r="3.6" fill="#fff"/></g>
+            <path d="M219,333 Q251,309 283,333" stroke="#1d140f" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+          </g>
+          <g id="eyeR" style="transform-origin:349px 334px">
+            <path d="M320,334 Q349,313 378,334 Q349,350 320,334 Z" fill="#fbfbff"/>
+            <g class="iris"><circle cx="349" cy="333" r="12.5" fill="#4a2c1a"/><circle cx="349" cy="333" r="6" fill="#120905"/><circle cx="353" cy="328" r="3.6" fill="#fff"/></g>
+            <path d="M317,333 Q349,309 381,333" stroke="#1d140f" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- nose -->
+          <path d="M302,338 Q296,378 286,392 Q300,404 316,392" stroke="#b0714f" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <!-- cheeks -->
+          <ellipse cx="236" cy="404" rx="24" ry="12" fill="#e58f7a" opacity=".22"/>
+          <ellipse cx="364" cy="404" rx="24" ry="12" fill="#e58f7a" opacity=".22"/>
+          <!-- mouth -->
+          <g id="mouth">
+            <path id="mouthIn" d="" fill="#4a1414"/>
+            <g clip-path="url(#mouthClip)">
+              <rect id="teeth" x="262" y="430" width="76" height="14" rx="4" fill="#fff"/>
+              <ellipse id="tongue" cx="300" cy="470" rx="20" ry="8" fill="#d0626a"/>
+            </g>
+            <path id="lips" d="" fill="none" stroke="#9c4f45" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+
+        <!-- laptop (scene 5) -->
+        <g id="laptop" opacity="0">
+          <path d="M120,700 L480,700 L520,790 L80,790 Z" fill="#1e293b" stroke="#22d3ee" stroke-width="3"/>
+          <path d="M150,712 L450,712 L470,760 L130,760 Z" fill="#0f172a"/>
+          <g fill="#334155"><rect x="160" y="718" width="280" height="8" rx="3"/><rect x="152" y="732" width="296" height="8" rx="3"/><rect x="146" y="746" width="308" height="8" rx="3"/></g>
+          <rect x="250" y="768" width="100" height="14" rx="5" fill="#334155"/>
+          <path d="M90,800 L510,800" stroke="#22d3ee" stroke-width="4" opacity=".6"/>
+        </g>
+        <!-- ARMS (viewer-left = L, viewer-right = R) -->
+        <g id="armL" transform="translate(98,570)">
+          <path d="M-40,-10 Q-44,90 -36,196 L36,196 Q44,90 38,-18 Q0,-40 -40,-10 Z" fill="url(#sleeve)"/>
+          <g id="foreL" transform="translate(0,186)">
+            <circle r="37" fill="#16274b"/>
+            <path d="M-33,0 L-28,160 L28,160 L33,0 Z" fill="url(#sleeve)"/>
+            <rect x="-31" y="148" width="62" height="16" rx="5" fill="#22d3ee"/>
+            <g id="handL" transform="translate(0,190)"></g>
+            <circle id="tipL" cx="0" cy="250" r="1" fill="none"/>
+          </g>
+        </g>
+        <g id="armR" transform="translate(502,570)">
+          <path d="M40,-10 Q44,90 36,196 L-36,196 Q-44,90 -38,-18 Q0,-40 40,-10 Z" fill="url(#sleeve)"/>
+          <g id="foreR" transform="translate(0,186)">
+            <circle r="37" fill="#16274b"/>
+            <path d="M33,0 L28,160 L-28,160 L-33,0 Z" fill="url(#sleeve)"/>
+            <rect x="-31" y="148" width="62" height="16" rx="5" fill="#22d3ee"/>
+            <g id="handR" transform="translate(0,190)"></g>
+            <circle id="tipR" cx="0" cy="250" r="1" fill="none"/>
+          </g>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- ============ SCENE LAYERS IN FRONT ============ -->
+    <!-- S1 -->
+    <div id="s1" class="abs" style="left:0;top:0;width:1080px">
+      <div id="s1t1" class="abs title grad glow" style="left:40px;width:1000px;top:140px;font-size:84px">AI &amp; DATA SCIENCE<br>ENGINEERING</div>
+      <div id="s1line" class="abs" style="left:290px;width:500px;top:365px;height:5px;background:linear-gradient(90deg,transparent,#22d3ee,transparent)"></div>
+      <div id="s1t2" class="abs title glow" style="left:0;width:1080px;top:392px;font-size:66px;letter-spacing:.28em;color:#fff">ICT ACADEMY</div>
+    </div>
+
+    <!-- S2 -->
+    <div id="s2" class="abs" style="left:0;top:0;width:1080px">
+      <div id="s2t1" class="abs title" style="left:40px;width:1000px;top:150px;font-size:104px;color:#fff;
+        text-shadow:0 0 24px #f97316,0 0 60px #ef4444">QABUL<br>BOSHLANDI!</div>
+      <div id="s2t2" class="abs" style="left:110px;top:420px;width:330px;height:190px;border-radius:30px;border:3px solid #22d3ee;
+        background:rgba(6,30,70,.8);box-shadow:0 0 40px rgba(34,211,238,.5);display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div class="title grad glow" style="font-size:118px;line-height:1">8 OY</div>
+      </div>
+      <div id="s2t3" class="abs" style="left:480px;top:420px;width:490px;height:190px;border-radius:30px;
+        background:linear-gradient(135deg,#0ea5e9,#2563eb 60%,#7c3aed);box-shadow:0 0 50px rgba(37,99,235,.7);
+        display:flex;align-items:center;justify-content:center">
+        <div class="title" style="font-size:64px;color:#fff;line-height:1.05">AI +<br>DATA SCIENCE</div>
+      </div>
+    </div>
+
+    <!-- S3 -->
+    <div id="s3" class="abs" style="left:0;top:0;width:1080px">
+      <div id="s3code" class="holo abs" style="left:560px;top:760px;width:490px;height:420px">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp;basics.py</div>
+        <div class="code" id="s3codeTxt"></div>
+      </div>
+      <svg id="s3py" class="abs" style="left:720px;top:1215px;width:180px;height:180px" viewBox="0 0 110 110">
+        <path d="M54 6c-24 0-23 10-23 10v11h24v4H22S6 29 6 54s14 24 14 24h9V66s-1-14 13-14h24s13 0 13-13V18S71 6 54 6zm-13 7a4 4 0 110 8 4 4 0 010-8z" fill="#3b82f6"/>
+        <path d="M56 104c24 0 23-10 23-10V83H55v-4h33s16 2 16-23-14-24-14-24h-9v12s1 14-13 14H44s-13 0-13 13v21s-2 12 25 12zm13-7a4 4 0 110-8 4 4 0 010 8z" fill="#facc15"/>
+      </svg>
+      <div id="s3head" class="abs title grad glow" style="left:40px;width:1000px;top:110px;font-size:60px">BOSHLANG‘ICH TALABLAR</div>
+      <div id="s3list" class="abs" style="left:150px;top:220px;width:780px;display:flex;flex-direction:column;gap:22px">
+        <div class="check"><b>✓</b>Python Basic</div>
+        <div class="check"><b>✓</b>Matematika</div>
+        <div class="check"><b>✓</b>Statistika</div>
+        <div class="check"><b>✓</b>Ehtimollar nazariyasi</div>
+      </div>
+    </div>
+
+    <!-- S4 -->
+    <div id="s4" class="abs" style="left:0;top:0;width:1080px">
+      <div id="s4head" class="abs title grad glow" style="left:40px;width:1000px;top:96px;font-size:48px">KURSDA NIMALARNI O‘RGANASIZ?</div>
+      <div id="s4grid" class="abs" style="left:40px;top:190px;width:1000px;display:grid;grid-template-columns:1fr 1fr;gap:20px 24px">
+        <div class="chip"><span class="ic">🐍</span>Python</div>
+        <div class="chip"><span class="ic">📊</span>Pandas &amp; NumPy</div>
+        <div class="chip"><span class="ic">🗄</span>SQL / PostgreSQL</div>
+        <div class="chip"><span class="ic">📈</span>Data Visualization</div>
+        <div class="chip"><span class="ic">🤖</span>Machine Learning</div>
+        <div class="chip"><span class="ic">🧠</span>Deep Learning</div>
+        <div class="chip"><span class="ic">🗣</span>NLP &amp; LLM</div>
+        <div class="chip"><span class="ic">👁</span>Computer Vision</div>
+        <div class="chip"><span class="ic">🎯</span>Prompt Engineering</div>
+        <div class="chip"><span class="ic">📦</span>Git &amp; GitHub</div>
+      </div>
+    </div>
+
+    <!-- S5 -->
+    <div id="s5" class="abs" style="left:0;top:0;width:1080px">
+      <div id="s5screen" class="holo abs" style="left:110px;top:150px;width:860px;height:560px;overflow:hidden">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp;<span id="s5title">project.py</span></div>
+        <div id="s5views" style="position:relative;height:514px"></div>
+      </div>
+      <div id="s5tags" class="abs" style="left:40px;top:740px;width:1000px;display:flex;flex-wrap:wrap;justify-content:center;gap:18px 18px">
+        <div class="tag">REAL PROJECTS</div><div class="tag">ML + DL</div><div class="tag">LLM + RAG</div>
+        <div class="tag">COMPUTER VISION</div><div class="tag">GITHUB PORTFOLIO</div>
+      </div>
+    </div>
+
+    <!-- S6 -->
+    <div id="s6" class="abs" style="left:0;top:0;width:1080px">
+      <div id="s6pre" class="abs title" style="left:40px;width:1000px;top:110px;font-size:42px;color:#bae6fd;letter-spacing:.12em">KURS NATIJASI</div>
+      <div id="s6t" class="abs title grad glow" style="left:30px;width:1020px;top:170px;font-size:82px">JUNIOR AI / DATA SCIENCE ENGINEER</div>
+    </div>
+
+    <!-- S7 -->
+    <div id="s7" class="abs" style="left:0;top:0;width:1080px">
+      <div id="s7logo" class="abs" style="left:0;width:1080px;top:90px;text-align:center">
+        <div class="title glow" style="font-size:96px;letter-spacing:.16em;color:#fff">ICT ACADEMY</div>
+        <div style="margin:14px auto 0;width:560px;height:5px;background:linear-gradient(90deg,transparent,#22d3ee,transparent)"></div>
+      </div>
+      <div id="s7card" class="holo abs" style="left:60px;top:290px;width:960px;padding:26px 20px">
+        <div class="cta-row" style="font-size:54px;color:#fff;text-shadow:0 0 22px #f97316"><span class="e">🔥</span>QABUL BOSHLANDI!</div>
+        <div class="cta-row"><span class="e">⏳</span>DAVOMIYLIGI: 8 OY</div>
+        <div class="cta-row"><span class="e">📍</span>ICT ACADEMY</div>
+        <div class="cta-row" style="font-size:40px"><span class="e">💻</span>AI &amp; DATA SCIENCE ENGINEERING</div>
+        <div style="height:2px;margin:10px 30px;background:linear-gradient(90deg,#22d3ee,transparent)"></div>
+        <div class="cta-row" style="color:#a5f3fc"><span class="e">📞</span>+998 (88) 333 88 09</div>
+        <div class="cta-row" style="color:#a5f3fc"><span class="e">📞</span>+998 (20) 035 26 04</div>
+        <div class="cta-row" style="color:#a5f3fc"><span class="e">📩</span>@ictacademy_official</div>
+        <div class="cta-row" style="color:#a5f3fc"><span class="e">🌐</span>ictacademy.uz/contact</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ripple" class="abs" style="left:0;top:0;width:10px;height:10px;pointer-events:none"></div>
+  <div id="subs"></div>
+  <div id="sweep"></div>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+</div></div>
+
+<div id="controls"><button id="play">▶︎ / ❚❚</button><input id="scrub" type="range" min="0" max="60" step="0.01" value="0" style="width:320px"><span id="tc">0.00</span></div>
+
+<script>
+/* =====================================================================
+   ICT ACADEMY — AI & Data Science Engineering (9:16, 60 s)
+   Butun animatsiya deterministik: window.renderAt(t) har qanday vaqt
+   uchun kadrni chizadi (render.js shu funksiyadan foydalanadi).
+   ===================================================================== */
+const DUR = 60;
+const $ = id => document.getElementById(id);
+const clamp = (v,a=0,b=1) => Math.min(b,Math.max(a,v));
+const lerp = (a,b,k) => a+(b-a)*k;
+const ease = k => k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;
+const easeOut = k => 1-Math.pow(1-k,3);
+const back = k => { const c=1.7; return 1+(c+1)*Math.pow(k-1,3)+c*Math.pow(k-1,2); };
+function rng(seed){ return () => (seed = (seed*16807) % 2147483647, (seed-1)/2147483646); }
+
+/* ---------------- Ssenariy: sahnalar va nutq ---------------- */
+const SCENES = [
+  {id:'s1', a:0,    b:6.4},
+  {id:'s2', a:6.4,  b:11.6},
+  {id:'s3', a:11.6, b:20.6},
+  {id:'s4', a:20.6, b:32.4},
+  {id:'s5', a:32.4, b:40.4},
+  {id:'s6', a:40.4, b:47.6},
+  {id:'s7', a:47.6, b:60.0},
+];
+const SPEECH = [
+  {a:0.4,  b:6.2,  text:"Sun’iy intellekt va Data Science sohasini chuqur o‘rganib, real AI loyihalar yaratmoqchimisiz?"},
+  {a:6.6,  b:11.3, text:"Unda ICT ACADEMY’dagi AI & Data Science Engineering kursi aynan siz uchun!"},
+  {a:11.8, b:20.3, text:"Kursni boshlash uchun Python Basic bilimlari, shuningdek matematika, statistika va ehtimollar nazariyasi bo‘yicha boshlang‘ich bilim talab qilinadi."},
+  {a:20.8, b:32.0, text:"Kurs davomida Python va ma’lumotlar tahlilidan boshlab, Machine Learning, Deep Learning, NLP, LLM, Computer Vision, Prompt Engineering hamda Git va GitHub bilan ishlashni o‘rganasiz."},
+  {a:32.6, b:40.1, text:"Eng muhimi, kurs faqat nazariya bilan cheklanmaydi. Siz real AI va Data Science loyihalarini yaratib, amaliy tajriba orttirasiz."},
+  {a:40.6, b:47.3, text:"Kurs yakunida mustaqil AI va Data Science loyihalarini ishlab chiqish va ularni amaliyotda qo‘llash ko‘nikmasiga ega bo‘lasiz."},
+  {a:47.8, b:54.8, text:"Joylar soni cheklangan! Hoziroq ICT ACADEMY bilan bog‘laning va AI hamda Data Science bo‘yicha o‘rganishni boshlang!"},
+];
+window.SCENES = SCENES; window.SPEECH = SPEECH;
+
+/* So‘z va harf vaqtlarini hisoblash (lab sinxroni + karaoke subtitr) */
+(function buildTimings(){
+  for (const s of SPEECH){
+    const words = s.text.split(' ');
+    const pauseOf = w => /[.!?]$/.test(w) ? .30 : /,$/.test(w) ? .17 : 0;
+    const weightOf = w => w.replace(/[^\p{L}\p{N}&]/gu,'').length + 1.2;
+    const totalPause = words.reduce((p,w,i)=> p + (i<words.length-1?pauseOf(w):0), 0);
+    const totalW = words.reduce((p,w)=>p+weightOf(w),0);
+    const k = (s.b - s.a - totalPause)/totalW;
+    let t = s.a; s.words = [];
+    words.forEach((w,i)=>{ const d = weightOf(w)*k; s.words.push({w, a:t, b:t+d}); t += d + (i<words.length-1?pauseOf(w):0); });
+    // subtitr bo‘laklari (~ 34 belgi, tinish belgisida uziladi)
+    s.chunks = []; let cur = [];
+    s.words.forEach((wd,i)=>{ cur.push(i); const len = cur.map(j=>s.words[j].w).join(' ').length;
+      if (len > 30 && /[,.!?]$/.test(wd.w) || len > 40 || i===s.words.length-1){ s.chunks.push(cur); cur=[]; } });
+  }
+})();
+
+/* Harf -> og‘iz ochilishi (viseme) */
+function visemeOf(ch){
+  ch = ch.toLowerCase();
+  if ('a'.includes(ch)) return [0.95,1.0];
+  if ('o'.includes(ch)) return [0.75,0.72];
+  if ('e'.includes(ch)) return [0.6,1.12];
+  if ('i'.includes(ch)) return [0.38,1.15];
+  if ('u'.includes(ch)) return [0.42,0.68];
+  if ('mbp'.includes(ch)) return [0.0,0.95];
+  if ('fv'.includes(ch)) return [0.14,1.02];
+  if (/[\p{L}]/u.test(ch)) return [0.26,1.0];
+  return [0.08,1.0];
+}
+function mouthTarget(t){
+  for (const s of SPEECH){
+    if (t < s.a-0.05 || t > s.b+0.05) continue;
+    for (const wd of s.words){
+      if (t >= wd.a && t < wd.b){
+        const letters = wd.w.replace(/[^\p{L}\p{N}]/gu,'');
+        if (!letters.length) return [0.3,1];
+        const k = (t-wd.a)/(wd.b-wd.a);
+        const idx = Math.min(letters.length-1, Math.floor(k*letters.length));
+        const [o,w] = visemeOf(letters[idx]);
+        const env = Math.sin(Math.PI*clamp(k*1.02)) ;          // so‘z chetlarida yopiladi
+        return [o*(0.55+0.45*env), w];
+      }
+    }
+    return [0.05,1];
+  }
+  return [0,1];
+}
+function mouthAt(t){ // silliqlash
+  let o=0,w=0,n=0;
+  for (let d=-0.05; d<=0.0501; d+=0.025){ const [a,b]=mouthTarget(t+d); const g = 1-Math.abs(d)*8; o+=a*g; w+=b*g; n+=g; }
+  o/=n; w/=n;
+  const E = window.VOICE_ENV; // haqiqiy ovoz balandligi bo‘lsa, lablar unga ergashadi
+  if (E){ const x=t*30, i=Math.floor(x), f=x-i; const e = lerp(E[i]||0, E[i+1]||0, f);
+    o = e < 0.06 ? o*e*4 : o*(0.35+0.65*Math.min(1,e*1.2)) + e*0.12; }
+  return [o, w];
+}
+function speaking(t){ return SPEECH.some(s=>t>=s.a && t<=s.b); }
+
+/* ---------------- Personaj pozalari ---------------- */
+const P = {
+  idle:    {la1:13, la2:-6,  ra1:-13, ra2:6,   hl:'open', hr:'open'},
+  welcome: {la1:24, la2:122, ra1:-24, ra2:-122, hl:'open', hr:'open'},
+  pointR:  {la1:12, la2:-8,  ra1:-112,ra2:-18, hl:'open', hr:'point'},
+  pointUpR:{la1:12, la2:-8,  ra1:-135,ra2:-25, hl:'open', hr:'point'},
+  pointUpL:{la1:135,la2:25,  ra1:-13, ra2:6,   hl:'point',hr:'open'},
+  presentL:{la1:40, la2:84,  ra1:-12, ra2:6,   hl:'open', hr:'open'},
+  explain: {la1:18, la2:-82, ra1:-30, ra2:-100,hl:'open', hr:'open'},
+  type:    {la1:12, la2:-96, ra1:-12, ra2:96,  hl:'open', hr:'open'},
+  chest:   {la1:10, la2:-104,ra1:-14, ra2:6,   hl:'open', hr:'open'},
+  thumbs:  {la1:13, la2:-6,  ra1:-22, ra2:-138,hl:'open', hr:'thumb'},
+};
+// [vaqt, poza]
+const POSES = [
+  [0,'idle'],[0.9,'welcome'],[3.2,'welcome'],[4.0,'explain'],[6.0,'explain'],
+  [6.8,'presentL'],[9.2,'presentL'],[9.8,'chest'],[11.3,'chest'],
+  [12.0,'pointR'],[14.5,'pointR'],[15.2,'pointUpL'],[19.6,'pointUpL'],[20.2,'idle'],
+  [21.0,'pointUpR'],[23.4,'pointUpR'],[24.0,'pointUpL'],[26.6,'pointUpL'],[27.2,'pointUpR'],[29.6,'pointUpR'],[30.2,'welcome'],[32.0,'welcome'],
+  [32.8,'type'],[36.6,'type'],[37.2,'explain'],[40.0,'explain'],
+  [40.8,'welcome'],[43.5,'welcome'],[44.2,'chest'],[47.2,'chest'],
+  [48.0,'explain'],[51.5,'explain'],[52.2,'welcome'],[55.2,'welcome'],[55.9,'thumbs'],[60,'thumbs'],
+];
+function poseAt(t){
+  let i=0; while (i<POSES.length-1 && POSES[i+1][0] <= t) i++;
+  const [t0,p0] = POSES[i]; const nx = POSES[i+1] || POSES[i]; const [t1,p1] = nx;
+  const k = t1>t0 ? ease(clamp((t-t0)/(t1-t0))) : 0;
+  const A=P[p0], B=P[p1], r={};
+  for (const key of ['la1','la2','ra1','ra2']) r[key]=lerp(A[key],B[key],k);
+  r.hl = k<.5?A.hl:B.hl; r.hr = k<.5?A.hr:B.hr; return r;
+}
+
+/* ---------------- Kamera ---------------- */
+// [vaqt, zoom, dx, dy, charX, charY, charScale]
+const CAM = [
+  [0,    1.12, 0,   40,   0,   0,   1.00],
+  [6.0,  1.00, 0,   0,    0,   0,   1.00],
+  [6.6,  1.00, 0,   0,    0,   20,  1.00],
+  [11.4, 1.10, 0,   -30,  0,   20,  1.00],
+  [11.8, 1.00, 0,   0,   -170, 60,  0.92],
+  [20.4, 1.04, 0,   0,   -170, 60,  0.92],
+  [20.8, 1.00, 0,   0,    0,   90,  0.95],
+  [32.2, 1.03, 0,   0,    0,   90,  0.95],
+  [32.6, 1.00, 0,   0,    0,   10,  0.95],
+  [40.2, 1.04, 0,   0,    0,   10,  0.95],
+  [40.6, 1.00, 0,   0,    0,   120, 0.95],
+  [47.4, 1.05, 0,   0,    0,   120, 0.95],
+  [47.8, 1.00, 0,   0,    0,   290, 0.78],
+  [60,   1.04, 0,   0,    0,   290, 0.78],
+];
+function camAt(t){
+  let i=0; while (i<CAM.length-1 && CAM[i+1][0] <= t) i++;
+  const a=CAM[i], b=CAM[i+1]||a; const k = b[0]>a[0]? ease(clamp((t-a[0])/(b[0]-a[0]))) : 0;
+  // sahna almashuvida tez “whip”, sahna ichida sekin drift
+  const fast = (b[0]-a[0]) < 1.0;
+  const kk = fast ? ease(k) : k;
+  return a.map((v,j)=> j===0? t : lerp(v,b[j],kk));
+}
+
+/* ---------------- Qo‘l shakllari ---------------- */
+const HANDS = {
+  open: `<ellipse cx="0" cy="8" rx="31" ry="36" fill="#dfa983"/>
+         <g fill="#dfa983"><rect x="-27" y="22" width="12" height="36" rx="6"/><rect x="-12" y="26" width="12" height="40" rx="6"/><rect x="3" y="25" width="12" height="38" rx="6"/><rect x="17" y="20" width="11" height="30" rx="5.5"/></g>
+         <rect x="-44" y="-6" width="14" height="32" rx="7" fill="#d59b75" transform="rotate(30 -37 10)"/>`,
+  point:`<ellipse cx="0" cy="6" rx="30" ry="30" fill="#dfa983"/>
+         <rect x="-7" y="18" width="14" height="62" rx="7" fill="#dfa983"/>
+         <path d="M-26,20 Q0,40 26,20" stroke="#c38862" stroke-width="3" fill="none"/>
+         <rect x="-42" y="-8" width="14" height="30" rx="7" fill="#d59b75" transform="rotate(35 -35 8)"/>`,
+  thumb:`<rect x="-30" y="-24" width="60" height="54" rx="20" fill="#dfa983"/>
+         <path d="M-24,-8 L24,-8 M-24,6 L24,6 M-24,20 L22,20" stroke="#c38862" stroke-width="3"/>
+         <rect x="-12" y="-72" width="24" height="54" rx="12" fill="#dfa983"/>`
+};
+let lastHand = {L:'',R:''};
+function setHand(side, type, forearmAngle){
+  const el = $('hand'+side);
+  if (lastHand[side] !== type){ el.innerHTML = HANDS[type]; lastHand[side]=type; }
+  if (type==='thumb') el.setAttribute('transform', `translate(0,190) rotate(${-forearmAngle})`);
+  else el.setAttribute('transform','translate(0,190)');
+}
+
+/* ---------------- Fon (canvas) ---------------- */
+const bg = $('bg').getContext('2d');
+const R = rng(20250927);
+const PARTS = Array.from({length:110},()=>({x:R()*1080,y:R()*1920,z:.3+R()*.9,s:1+R()*2.6,p:R()*6.28}));
+const NODES = Array.from({length:26},()=>({x:R()*1080,y:120+R()*1500,p:R()*6.28,r:3+R()*4}));
+const CODE_LINES = ['import numpy as np','import pandas as pd','from sklearn.model_selection import train_test_split',
+ 'model = RandomForestClassifier()','model.fit(X_train, y_train)','df.groupby("kurs").mean()','SELECT * FROM talabalar;',
+ 'loss.backward()','optimizer.step()','embeddings = encoder(text)','y_pred = model.predict(X_test)','plt.plot(history["loss"])',
+ 'torch.nn.Conv2d(3, 64, 3)','git commit -m "AI loyiha"','accuracy_score(y_test, y_pred)','retriever.search(query, k=5)'];
+const CODES = Array.from({length:14},(_,i)=>({x:30+R()*700,y:R()*1920,v:18+R()*30,l:CODE_LINES[i%CODE_LINES.length],a:.07+R()*.1}));
+function drawBg(t){
+  const c = bg; c.clearRect(0,0,1080,1920);
+  // neon nurlar
+  for (let i=0;i<5;i++){
+    const x = 540 + Math.sin(t*.25+i*1.3)*420;
+    const g = c.createLinearGradient(x,0,x+160,1920);
+    g.addColorStop(0,'rgba(34,211,238,0)'); g.addColorStop(.5,`rgba(${i%2?59:34},${i%2?130:211},${i%2?246:238},.07)`); g.addColorStop(1,'rgba(34,211,238,0)');
+    c.fillStyle=g; c.save(); c.translate(x,0); c.rotate(-.12+ i*.05); c.fillRect(-60,-100,120,2200); c.restore();
+  }
+  // perspektiv pol to‘ri
+  c.save(); c.strokeStyle='rgba(34,211,238,.22)'; c.lineWidth=2;
+  const hz=1240;
+  for (let i=-12;i<=12;i++){ c.beginPath(); c.moveTo(540+i*18,hz); c.lineTo(540+i*260,1920); c.stroke(); }
+  const off = (t*60)%1;
+  for (let j=0;j<14;j++){ const k = (j+off)/14; const y = hz + Math.pow(k,2.2)*(1920-hz); c.globalAlpha = k; c.beginPath(); c.moveTo(0,y); c.lineTo(1080,y); c.stroke(); }
+  c.restore();
+  // oqib turuvchi kod
+  c.font = '500 22px "JetBrains Mono", monospace';
+  for (const k of CODES){ const y = ((k.y - t*k.v) % 1920 + 1920) % 1920; c.fillStyle=`rgba(125,211,252,${k.a})`; c.fillText(k.l,k.x,y); }
+  // neyron tarmoq
+  c.lineWidth=1.4;
+  const pos = NODES.map(n=>({x:n.x+Math.sin(t*.6+n.p)*22, y:n.y+Math.cos(t*.5+n.p)*18, r:n.r, p:n.p}));
+  for (let i=0;i<pos.length;i++) for (let j=i+1;j<pos.length;j++){
+    const dx=pos[i].x-pos[j].x, dy=pos[i].y-pos[j].y, d=Math.hypot(dx,dy);
+    if (d<260){ c.strokeStyle=`rgba(56,189,248,${.22*(1-d/260)})`; c.beginPath(); c.moveTo(pos[i].x,pos[i].y); c.lineTo(pos[j].x,pos[j].y); c.stroke();
+      const q = ((t*.5 + i*.13 + j*.07)%1); c.fillStyle=`rgba(165,243,252,${.5*(1-d/260)})`; c.beginPath(); c.arc(lerp(pos[i].x,pos[j].x,q),lerp(pos[i].y,pos[j].y,q),2.2,0,7); c.fill(); }
+  }
+  for (const n of pos){ c.fillStyle='rgba(103,232,249,.55)'; c.beginPath(); c.arc(n.x,n.y,n.r*(1+.25*Math.sin(t*3+n.p)),0,7); c.fill(); }
+  // zarrachalar
+  for (const p of PARTS){ const y = ((p.y - t*40*p.z)%1920+1920)%1920; const a = .25+.35*Math.sin(t*2+p.p);
+    c.fillStyle=`rgba(165,243,252,${a*p.z})`; c.beginPath(); c.arc(p.x+Math.sin(t+p.p)*10,y,p.s*p.z,0,7); c.fill(); }
+}
+
+/* Miya ichidagi tarmoq (statik tuzilma, animatsiyali yorug‘lik) */
+const BR = rng(77); const brainPts = Array.from({length:26},()=>{ const a=BR()*6.28, r=Math.sqrt(BR()); return [250+Math.cos(a)*170*r, 205+Math.sin(a)*140*r]; });
+(function(){
+  let h=''; brainPts.forEach((p,i)=>{ brainPts.forEach((q,j)=>{ if (j>i && Math.hypot(p[0]-q[0],p[1]-q[1])<95) h+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}"/>`; }); });
+  brainPts.forEach((p,i)=> h+=`<circle class="bn" cx="${p[0]}" cy="${p[1]}" r="6" fill="#a5f3fc" stroke="none"/>`);
+  $('brainNet').innerHTML = h;
+  let b=''; for (let i=0;i<8;i++) b+=`<rect x="${22+i*25}" y="60" width="16" height="90" rx="3"/>`; $('chartBars').innerHTML=b;
+  const SR=rng(5); let s=''; for (let i=0;i<22;i++){ const x=25+SR()*185, y=30+SR()*125; const up = (150-y) > (x-20)*.66; s+=`<circle cx="${x}" cy="${y}" r="5" fill="${up?'#22d3ee':'#f472b6'}"/>`; } $('scatter').innerHTML=s;
+  let g=''; const GR=rng(9); for (let i=0;i<26*6;i++){ const v=GR(); const col = v<.25?'#0f2744':v<.5?'#0e7490':v<.8?'#06b6d4':'#67e8f9'; g+=`<div style="aspect-ratio:1;border-radius:3px;background:${col}"></div>`; } $('contrib').innerHTML=g;
+  document.querySelectorAll('.repo').forEach(r=>{ r.style.cssText='padding:12px 14px;border:1px solid rgba(34,211,238,.45);border-radius:12px;color:#e0f2fe;background:rgba(8,30,70,.6)'; });
+})();
+
+/* S3 kod (yozilib boradi) */
+const S3CODE = [
+ ['<span class="c"># Python Basic</span>',''],
+ ['<span class="k">import</span> numpy <span class="k">as</span> np',''],
+ ['baholar = [<span class="n">85</span>, <span class="n">92</span>, <span class="n">78</span>, <span class="n">95</span>]',''],
+ ['o_rtacha = np.<span class="f">mean</span>(baholar)',''],
+ ['std = np.<span class="f">std</span>(baholar)',''],
+ ['<span class="f">print</span>(<span class="s">f"O‘rtacha: {o_rtacha}"</span>)',''],
+];
+function plainLen(h){ return h.replace(/<[^>]+>/g,'').length; }
+function typed(html, n){ // html satrdan n ta ko‘rinadigan belgini qaytaradi
+  let out='', cnt=0, i=0;
+  while (i<html.length && cnt<n){ if (html[i]==='<'){ const j=html.indexOf('>',i); out+=html.slice(i,j+1); i=j+1; } else { out+=html[i++]; cnt++; } }
+  const opens=(out.match(/<span/g)||[]).length, closes=(out.match(/<\/span>/g)||[]).length;
+  return out + '</span>'.repeat(Math.max(0,opens-closes));
+}
+
+/* S5 laptop ekrani ko‘rinishlari */
+const S5VIEWS = [
+ {t:'analysis.py', h:`<div class="code"><span class="k">import</span> pandas <span class="k">as</span> pd
+df = pd.<span class="f">read_csv</span>(<span class="s">"data.csv"</span>)
+df.<span class="f">describe</span>()
+X, y = df.<span class="f">drop</span>(<span class="s">"target"</span>, axis=<span class="n">1</span>), df.target</div>`},
+ {t:'DataFrame', h:`<table style="margin:22px auto;border-collapse:collapse;font:500 25px 'JetBrains Mono';color:#e0f2fe">
+  <tr style="color:#67e8f9"><td style="padding:10px 22px">id</td><td style="padding:10px 22px">yosh</td><td style="padding:10px 22px">ball</td><td style="padding:10px 22px">natija</td></tr>
+  ${[[0,21,87,1],[1,24,74,0],[2,19,92,1],[3,27,65,0],[4,22,81,1],[5,25,90,1]].map(r=>`<tr style="border-top:1px solid rgba(34,211,238,.25)">${r.map(v=>`<td style="padding:10px 22px">${v}</td>`).join('')}</tr>`).join('')}</table>`},
+ {t:'charts', h:`<svg viewBox="0 0 860 500" width="860" height="500"><g fill="#22d3ee">${[120,210,160,300,250,380,330,420].map((v,i)=>`<rect x="${70+i*62}" y="${450-v}" width="40" height="${v}" rx="6" opacity="${.55+i*.05}"/>`).join('')}</g>
+  <circle cx="700" cy="250" r="120" fill="none" stroke="#1e3a8a" stroke-width="44"/><circle cx="700" cy="250" r="120" fill="none" stroke="#22d3ee" stroke-width="44" stroke-dasharray="470 754" transform="rotate(-90 700 250)"/><circle cx="700" cy="250" r="120" fill="none" stroke="#a78bfa" stroke-width="44" stroke-dasharray="160 754" stroke-dashoffset="-470" transform="rotate(-90 700 250)"/></svg>`},
+ {t:'ml_model.py', h:`<svg viewBox="0 0 860 500" width="860" height="500" id="nnsvg">${(()=>{const L=[4,6,6,3];let s='';const xs=[140,340,540,740];const pts=L.map((n,i)=>Array.from({length:n},(_,j)=>[xs[i],250+(j-(n-1)/2)*72]));for(let i=0;i<3;i++)for(const a of pts[i])for(const b of pts[i+1])s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#38bdf8" stroke-opacity=".35" stroke-width="2"/>`;pts.flat().forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="20" fill="#0e7490" stroke="#67e8f9" stroke-width="3"/>`);return s+'<text x="430" y="480" text-anchor="middle" fill="#a5f3fc" font-family="JetBrains Mono" font-size="24">model.fit(X_train, y_train)</text>';})()}</svg>`},
+ {t:'AI chatbot', h:`<div style="padding:26px 40px;display:flex;flex-direction:column;gap:18px;font-weight:600;font-size:28px">
+  <div style="align-self:flex-end;background:#2563eb;padding:14px 22px;border-radius:20px 20px 4px 20px">Salom! Menga yordam bera olasanmi?</div>
+  <div style="align-self:flex-start;background:rgba(34,211,238,.18);border:1px solid #22d3ee;padding:14px 22px;border-radius:20px 20px 20px 4px">🤖 Albatta! Savolingizni yozing.</div>
+  <div style="align-self:flex-start;color:#67e8f9;font-size:40px;letter-spacing:6px">● ● ●</div></div>`},
+ {t:'computer_vision.py', h:`<svg viewBox="0 0 860 500" width="860" height="500">
+  <rect x="60" y="40" width="740" height="420" rx="16" fill="#0b1b36"/>
+  <circle cx="300" cy="200" r="60" fill="#475569"/><rect x="230" y="260" width="140" height="170" rx="40" fill="#475569"/>
+  <rect x="520" y="250" width="200" height="130" rx="16" fill="#334155"/><circle cx="560" cy="385" r="22" fill="#1e293b"/><circle cx="680" cy="385" r="22" fill="#1e293b"/>
+  <rect x="215" y="120" width="170" height="320" fill="none" stroke="#22d3ee" stroke-width="5"/><rect x="215" y="88" width="190" height="34" fill="#22d3ee"/><text x="224" y="113" font-family="JetBrains Mono" font-size="22" fill="#03203a">person 0.97</text>
+  <rect x="505" y="230" width="230" height="185" fill="none" stroke="#f472b6" stroke-width="5"/><rect x="505" y="198" width="140" height="34" fill="#f472b6"/><text x="514" y="223" font-family="JetBrains Mono" font-size="22" fill="#3b0626">car 0.94</text></svg>`},
+ {t:'rag_system.py', h:`<svg viewBox="0 0 860 500" width="860" height="500" font-family="Montserrat" font-weight="700" font-size="24">
+  ${[['📄 Hujjatlar',30],['🔢 Embedding',240],['🗄 Vector DB',450],['🧠 LLM',660]].map(([l,x])=>`<rect x="${x}" y="190" width="180" height="110" rx="18" fill="rgba(14,116,144,.45)" stroke="#22d3ee" stroke-width="3"/><text x="${x+90}" y="253" text-anchor="middle" fill="#e0f2fe">${l}</text>`).join('')}
+  ${[210,420,630].map(x=>`<path d="M${x+5},245 L${x+28},245" stroke="#67e8f9" stroke-width="5" marker-end=""/><path d="M${x+22},236 L${x+32},245 L${x+22},254" fill="none" stroke="#67e8f9" stroke-width="4"/>`).join('')}
+  <text x="430" y="120" text-anchor="middle" fill="#a5f3fc" font-size="30">RAG tizimi</text>
+  <text x="430" y="390" text-anchor="middle" fill="#86efac" font-family="JetBrains Mono" font-weight="500" font-size="24">retriever → context → answer</text></svg>`},
+];
+(function(){ $('s5views').innerHTML = S5VIEWS.map((v,i)=>`<div class="s5v" style="position:absolute;inset:0">${v.h}</div>`).join(''); })();
+
+/* S7 fon logotip halqasi */
+$('s7back').innerHTML = `<svg width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0">
+  <g id="rings" style="transform-origin:540px 780px">
+   <circle cx="540" cy="780" r="470" fill="none" stroke="#22d3ee" stroke-opacity=".25" stroke-width="3" stroke-dasharray="14 18"/>
+   <circle cx="540" cy="780" r="400" fill="none" stroke="#3b82f6" stroke-opacity=".35" stroke-width="2"/>
+  </g></svg>`;
+
+/* ---------------- Yordamchi: element kirish/chiqish ---------------- */
+function vis(el, t, tin, tout, type='up', dur=.5){
+  if (typeof el === 'string') el = $(el);
+  const kin = clamp((t-tin)/dur), kout = clamp((tout - t)/.35);
+  const k = Math.min(kin, kout);
+  if (k<=0){ el.style.opacity=0; el.style.visibility='hidden'; return 0; }
+  el.style.visibility='visible';
+  const e = type==='pop' ? back(kin) : easeOut(kin);
+  const o = kout<1 ? easeOut(kout) : 1;
+  let tr='';
+  if (type==='up') tr = `translateY(${(1-e)*60}px)`;
+  else if (type==='down') tr = `translateY(${-(1-e)*60}px)`;
+  else if (type==='left') tr = `translateX(${-(1-e)*120}px)`;
+  else if (type==='right') tr = `translateX(${(1-e)*120}px)`;
+  else if (type==='pop') tr = `scale(${lerp(.4,1,e)})`;
+  else if (type==='zoom') tr = `scale(${lerp(1.6,1,e)})`;
+  if (kout<1) tr += ` scale(${lerp(.92,1,o)})`;
+  el.style.transform = tr;
+  el.style.opacity = Math.min(easeOut(kin), o);
+  el.style.filter = kin<1 ? `blur(${(1-easeOut(kin))*10}px)` : 'none';
+  return k;
+}
+function sceneAt(t){ return SCENES.find(s=>t>=s.a && t<s.b) || SCENES[SCENES.length-1]; }
+
+/* ---------------- ASOSIY RENDER ---------------- */
+let blinkTimes = [1.7,4.9,8.3,10.6,13.9,17.2,19.9,23.1,26.4,29.8,33.9,37.1,41.2,44.8,49.6,53.1,56.7,58.9];
+function renderAt(t){
+  t = clamp(t,0,DUR-1e-6);
+  drawBg(t);
+
+  /* fon ikonalari */
+  const bgA = [
+    ['brain',   0, 6.4, 'zoom'], ['pyBg', 11.6, 20.6,'left'], ['dbBg', 20.6, 32.4,'right'],
+    ['chartBg', 0.6, 32.4,'left'], ['mlBg', 1.0, 32.4,'right'],
+  ];
+  for (const [id,a,b,ty] of bgA){ const k = vis(id,t,a,b,ty,.8); if (k>0){ const el=$(id); el.style.transform += ` translateY(${Math.sin(t*1.2+a)*10}px)`; el.style.opacity *= (id==='brain'?.95:.8); } }
+  document.querySelectorAll('#brainNet .bn').forEach((c,i)=>c.setAttribute('opacity', .35+.65*Math.max(0,Math.sin(t*4+i*.9))));
+  const bars = $('chartBars').children; for (let i=0;i<bars.length;i++){ const h = 30+ (Math.sin(t*2.2+i*.8)*.5+.5)*95; bars[i].setAttribute('y',155-h); bars[i].setAttribute('height',h); }
+  $('chartLine').setAttribute('points', Array.from({length:9},(_,i)=>`${22+i*24},${95+Math.sin(t*1.8+i*.7)*38}`).join(' '));
+
+  /* kamera */
+  const [ , zoom, dx, dy, cx, cy, cs] = camAt(t);
+  const shake = Math.sin(t*.7)*6;
+  $('world').style.transform = `translate(${shake}px,${Math.cos(t*.5)*5}px)`;
+  $('charWrap').style.transform = `translate(${cx+dx}px,${cy+dy}px) scale(${cs*zoom})`;
+
+  /* personaj */
+  const talk = speaking(t);
+  const breathe = Math.sin(t*2.1)*3;
+  const [mo,mw] = mouthAt(t);
+  const nod = talk ? Math.sin(t*5.3)*1.6 + Math.sin(t*2.3)*1.2 : Math.sin(t*1.1)*.8;
+  const tilt = talk ? Math.sin(t*1.7)*2.4 : Math.sin(t*.8)*1.2;
+  $('head').style.transform = `translateY(${breathe*.6 + nod}px) rotate(${tilt}deg)`;
+  // ko‘z qisish
+  let blink = 1; for (const b of blinkTimes){ const d=Math.abs(t-b); if (d<.09) blink = Math.min(blink, d/.09*0.9+0.08); }
+  $('eyeL').style.transform = `scaleY(${blink})`; $('eyeR').style.transform = `scaleY(${blink})`;
+  // qosh (gapirganda ko‘tariladi)
+  const br = talk ? Math.max(0,Math.sin(t*3.1))*5 : 0;
+  $('browL').setAttribute('transform',`translate(0,${-br})`); $('browR').setAttribute('transform',`translate(0,${-br})`);
+  // ko‘z qorachig‘i kameraga
+  const lookX = Math.sin(t*.35)*2.2;
+  document.querySelectorAll('#char .iris').forEach(g=>g.setAttribute('transform',`translate(${lookX},0)`));
+  // og‘iz
+  const smile = talk ? 6 : 12 + (t>55?6:0);
+  const w = 30*mw + (talk?0:6), cxm=300, cym=446;
+  const op = mo*46;
+  const upY = cym - 2 - op*.22, loY = cym + 3 + op;
+  const cornerY = cym - smile*.5;
+  const inner = `M${cxm-w},${cornerY} Q${cxm},${upY - smile*.2} ${cxm+w},${cornerY} Q${cxm},${loY + smile*.7} ${cxm-w},${cornerY} Z`;
+  $('mouthIn').setAttribute('d', inner); $('mouthClipPath').setAttribute('d', inner);
+  $('lips').setAttribute('d', inner);
+  $('lips').setAttribute('stroke-width', op<2 ? 5 : 4);
+  $('mouthIn').setAttribute('fill', op<2 ? '#9c4f45' : '#4a1414');
+  $('teeth').setAttribute('y', upY - 6); $('teeth').setAttribute('opacity', op>6 ? 1 : (talk?0:(t>55?1:0)));
+  if (!talk && t>55){ // keng tabassum (tishlar ko‘rinadi)
+    const sm = `M${cxm-40},${cym-10} Q${cxm},${cym-8} ${cxm+40},${cym-10} Q${cxm},${cym+26} ${cxm-40},${cym-10} Z`;
+    $('mouthIn').setAttribute('d', sm); $('mouthClipPath').setAttribute('d', sm); $('lips').setAttribute('d', sm);
+    $('mouthIn').setAttribute('fill','#4a1414'); $('teeth').setAttribute('y', cym-12); $('teeth').setAttribute('opacity',1);
+  }
+  $('tongue').setAttribute('cy', loY - 3);
+  // qo‘llar
+  const p = poseAt(t);
+  const gest = talk ? Math.sin(t*3.4)*4 : 0;
+  $('armL').setAttribute('transform', `translate(98,${570+breathe}) rotate(${p.la1 + gest*.5})`);
+  $('foreL').setAttribute('transform', `translate(0,186) rotate(${p.la2 + gest})`);
+  $('armR').setAttribute('transform', `translate(502,${570+breathe}) rotate(${p.ra1 - gest*.5})`);
+  $('foreR').setAttribute('transform', `translate(0,186) rotate(${p.ra2 - gest})`);
+  setHand('L', p.hl, p.la1+p.la2); setHand('R', p.hr, p.ra1+p.ra2);
+
+  /* sahnalar */
+  // S1
+  vis('s1t1',t,0.3,6.3,'zoom',.7); vis('s1line',t,1.0,6.3,'pop',.5); vis('s1t2',t,1.4,6.3,'up',.6);
+  // S2
+  vis('s2t1',t,6.6,11.5,'pop',.5); vis('s2t2',t,7.6,11.5,'left',.5); vis('s2t3',t,8.3,11.5,'right',.5);
+  $('s2t1').style.transform += ` scale(${1+Math.max(0,Math.sin(t*6))*.03})`;
+  // S3
+  vis('s3head',t,11.8,20.5,'down',.5); vis('s3code',t,12.2,20.5,'right',.6); vis('s3py',t,12.9,20.5,'pop',.6);
+  if ($('s3py').style.visibility==='visible') $('s3py').style.transform += ` rotate(${Math.sin(t*1.5)*10}deg)`;
+  const s3chars = Math.floor((t-12.4)*34); let s3h=''; let rem = Math.max(0,s3chars);
+  for (const [line] of S3CODE){ const L=plainLen(line); if (rem<=0) break; s3h += typed(line, rem) + '\n'; rem -= L; }
+  $('s3codeTxt').innerHTML = s3h + (Math.floor(t*2.5)%2 ? '▌' : '');
+  const checkT = [13.9,15.6,16.9,18.1];
+  [...$('s3list').children].forEach((el,i)=>{ vis(el,t,checkT[i],20.5,'left',.45); });
+  $('s3list').style.visibility='visible';
+  // S4
+  vis('s4head',t,20.8,32.3,'down',.5);
+  const chipT = [21.2,22.6,23.6,24.4,25.3,26.2,27.1,28.2,29.4,30.6];
+  [...$('s4grid').children].forEach((el,i)=>{ const k = vis(el,t,chipT[i],32.3,'pop',.45);
+     if (k>0){ const fl = clamp(1-(t-chipT[i])/0.6); el.style.boxShadow = `0 0 ${22+fl*50}px rgba(34,211,238,${.35+fl*.6}), inset 0 0 22px rgba(34,211,238,.12)`; } });
+  // S5
+  $('laptop').setAttribute('opacity', clamp((t-32.4)/.4) * clamp((40.4-t)/.3));
+  vis('s5screen',t,32.6,40.3,'zoom',.6);
+  const vT = [32.9,34.0,35.0,36.0,37.0,38.0,39.0,40.4]; let vi=0; for (let i=0;i<S5VIEWS.length;i++) if (t>=vT[i]) vi=i;
+  [...document.querySelectorAll('.s5v')].forEach((el,i)=>{ const k = i===vi ? clamp((t-vT[i])/.25) : 0; el.style.opacity=k; el.style.transform=`translateX(${(1-k)*40}px)`; });
+  $('s5title').textContent = S5VIEWS[vi].t;
+  const tagT = [33.4,34.6,35.8,37.0,38.2];
+  [...$('s5tags').children].forEach((el,i)=>vis(el,t,tagT[i],40.3,'pop',.4));
+  // S6
+  vis('s6back',t,40.5,47.5,'zoom',.7);
+  vis('ghWin',t,40.7,47.5,'left',.6); vis('projWin',t,41.3,47.5,'right',.6); vis('certWin',t,42.0,47.5,'pop',.6);
+  vis('s6pre',t,40.8,47.5,'down',.5); vis('s6t',t,44.6,47.5,'zoom',.6);
+  // S7
+  vis('s7back',t,47.6,60,'zoom',.8); $('rings').style.transform = `rotate(${t*12}deg)`;
+  vis('s7logo',t,47.8,60,'zoom',.6); vis('s7card',t,48.4,60,'up',.6);
+  const ctaT = [48.6,49.2,49.7,50.2,50.2,51.4,52.2,53.0,53.8];
+  [...$('s7card').children].forEach((el,i)=>vis(el,t,ctaT[i],60,'left',.45));
+  $('s7card').style.boxShadow = `0 0 ${40+Math.sin(t*4)*18}px rgba(34,211,238,.45), inset 0 0 40px rgba(34,211,238,.1)`;
+
+  // ko‘rinmas sahna konteynerlari
+  for (const s of SCENES){ const el=$(s.id); el.style.display = (t>=s.a-0.1 && t<s.b+0.5) ? 'block':'none'; }
+
+  /* barmoq uchida holografik to‘lqin */
+  const rp = $('ripple'); rp.innerHTML='';
+  const pointing = p.hr==='point' ? 'tipR' : p.hl==='point' ? 'tipL' : null;
+  if (pointing){ const st=$('stage').getBoundingClientRect(), sc = st.width/1080; const r=$(pointing).getBoundingClientRect();
+    const x=(r.left+r.width/2-st.left)/sc, y=(r.top+r.height/2-st.top)/sc;
+    for (let i=0;i<3;i++){ const q=((t*1.4)+i/3)%1; rp.innerHTML += `<div style="position:absolute;left:${x-60*q}px;top:${y-60*q}px;width:${120*q}px;height:${120*q}px;border-radius:50%;border:3px solid rgba(103,232,249,${1-q});box-shadow:0 0 12px rgba(34,211,238,${1-q})"></div>`; }
+    rp.innerHTML += `<div style="position:absolute;left:${x-9}px;top:${y-9}px;width:18px;height:18px;border-radius:50%;background:#a5f3fc;box-shadow:0 0 22px 8px rgba(34,211,238,.8)"></div>`;
+  }
+
+  /* subtitr (karaoke) */
+  const sp = SPEECH.find(s=>t>=s.a-0.15 && t<=s.b+0.35);
+  const subs = $('subs');
+  if (sp){
+    let ci = sp.chunks.findIndex(ch=> t < sp.words[ch[ch.length-1]].b + 0.12); if (ci<0) ci = sp.chunks.length-1;
+    subs.innerHTML = '<div>' + sp.chunks[ci].map(j=>{ const wd=sp.words[j]; const cls = t>=wd.b ? 'done' : t>=wd.a ? 'on' : 'todo'; return `<span class="w ${cls}">${wd.w.replace(/&/g,'&amp;')}</span>`; }).join(' ') + '</div>';
+    subs.style.opacity = clamp((t-sp.a+0.15)/.15)*clamp((sp.b+0.35-t)/.2);
+  } else subs.style.opacity = 0;
+
+  /* o‘tishlar: yorug‘lik chaqnashi + nur supurish */
+  let fl=0, sw=null;
+  for (const s of SCENES.slice(1)){ const d=t-s.a; if (d>-0.12 && d<0.35) fl=Math.max(fl, d<0 ? (d+.12)/.12*.7 : .7*(1-d/.35));
+    if (d>-0.3 && d<0.5) sw = (d+.3)/.8; }
+  $('flash').style.opacity = fl;
+  const swe=$('sweep'); if (sw!==null){ swe.style.opacity=1; swe.style.left = `${lerp(-500,1300,sw)}px`; } else swe.style.opacity=0;
+  // yakuniy qorayish
+  $('vignette').style.background = `radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.55) 100%)` + (t>59.4 ? `, rgba(0,0,0,${(t-59.4)/.6})` : '');
+}
+window.renderAt = renderAt;
+window.DUR = DUR;
+
+/* ---------------- Brauzerda ko‘rish rejimi ---------------- */
+const params = new URLSearchParams(location.search);
+if (params.has('render')){ document.body.classList.add('render'); renderAt(0); }
+else {
+  const fit = () => { const s = Math.min(innerWidth/1080, innerHeight/1920); $('stage').style.transform = `scale(${s})`; };
+  addEventListener('resize', fit); fit();
+  let playing = true, t0 = performance.now(), base = 0;
+  const loop = now => { let t = playing ? base + (now-t0)/1000 : base; if (t>=DUR){ base=0; t0=now; t=0; }
+    renderAt(t); $('scrub').value=t; $('tc').textContent=t.toFixed(2); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+  $('play').onclick = () => { const now=performance.now(); if (playing){ base += (now-t0)/1000; } else t0=now; playing=!playing; };
+  $('scrub').oninput = e => { base = +e.target.value; t0 = performance.now(); };
+}
+</script>
+</body>
+</html>
