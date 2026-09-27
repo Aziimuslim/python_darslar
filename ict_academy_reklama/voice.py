@@ -1,11 +1,11 @@
-"""O‘zbekcha diktor ovozini espeak-ng (uz) bilan yaratadi va har bir gapni
+"""O‘zbekcha diktor ovozini MBROLA (mb-tr1, erkak ovozi) + espeak-ng bilan yaratadi va har bir gapni
 reklama.html dagi SPEECH vaqt oralig‘iga moslaydi.
 
 Natijalar:
   audio/ovoz.wav        — 60 soniyalik ovoz treki (0:00 dan)
   audio/ovoz_env.js     — lab sinxroni uchun ovoz balandligi (30 fps)
 
-Talab: espeak-ng (apt install espeak-ng), ffmpeg (FFMPEG muhit o‘zgaruvchisi), numpy.
+Talab: espeak-ng, mbrola, mbrola-tr1 (apt install espeak-ng mbrola mbrola-tr1), ffmpeg (FFMPEG muhit o‘zgaruvchisi), numpy.
 Inglizcha atamalar o‘zbekcha talaffuzda yozilgan (ekrandagi matn o‘zgarmaydi).
 """
 import os, re, subprocess, tempfile, wave, json
@@ -13,7 +13,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FF = os.environ.get('FFMPEG', 'ffmpeg')
-VOICE = os.environ.get('ESPEAK_VOICE', 'uz+m3')
+VOICE = os.environ.get('ESPEAK_VOICE', 'mb-tr1')   # 'uz+m3' — eski formant ovoz
 SR = 44100; DUR = 60.0; FPS = 30
 
 # Ekrandagi matn -> talaffuz (faqat ovoz uchun)
@@ -24,7 +24,7 @@ PRON = [
     ("Data Science", "Deyta Sayens"),
     ("Machine Learning", "Mashin Lyorning"),
     ("Deep Learning", "Dip Lyorning"),
-    ("Computer Vision", "Kompyuter Vijn"),
+    ("Computer Vision", "Kompyuter Viʒin"),
     ("Prompt Engineering", "Prompt Enjiniring"),
     ("Python Basic", "Payton Beysik"),
     ("Python", "Payton"),
@@ -34,10 +34,19 @@ PRON = [
     ("AI", "Ey-Ay"),
 ]
 
+# O‘zbek lotin yozuvi -> turk imlosi (MBROLA turkcha difonlari o‘zbekchaga yaqin)
+TR = [("o'", "ö"), ("g'", "g"), ("sh", "ş"), ("ch", "ç"), ("j", "c"), ("q", "k"), ("x", "h"),
+      ("yo", "yo"), ("lyo", "lö"), ("'", ""), ("ʒ", "j")]
+
 def pron(text):
     for a, b in PRON:
         text = text.replace(a, b)
-    return re.sub('[‘’ʻʼ`]', "'", text)
+    text = re.sub('[‘’ʻʼ`]', "'", text).replace('-', ' ')
+    if VOICE.startswith('mb-tr'):
+        text = text.replace('I', 'ı').lower()
+        for a, b in TR:
+            text = text.replace(a, b)
+    return text
 
 def speech_items():
     html = open(os.path.join(HERE, 'reklama.html'), encoding='utf-8').read()
@@ -45,7 +54,19 @@ def speech_items():
             re.findall(r'\{a:([\d.]+),\s*b:([\d.]+),\s*text:"([^"]+)"\}', html)]
 
 def synth(text, rate, path):
-    subprocess.run(['espeak-ng', '-v', VOICE, '-s', str(rate), '-p', '42', '-g', '2', '-w', path, text], check=True)
+    if VOICE.startswith('mb-'):
+        # espeak-ng fonemalar -> MBROLA; bazada yo‘q difonlarni yaqin fonemaga almashtiramiz
+        pho = subprocess.run(['espeak-ng', '-v', VOICE, '-q', '--pho', '-s', str(rate), '-p', '38', text],
+                             check=True, capture_output=True, text=True).stdout
+        fix = {'&': 'e', 'l/': 'l', 'L/': 'L'}
+        pho = '\n'.join((fix.get(l.split('\t')[0], l.split('\t')[0]) + l[len(l.split('\t')[0]):]) if l else l
+                        for l in pho.splitlines())
+        db = f"/usr/share/mbrola/{VOICE[3:]}/{VOICE[3:]}"
+        with open(path + '.pho', 'w') as f: f.write(pho + '\n')
+        r = subprocess.run(['mbrola', '-e', db, path + '.pho', path], capture_output=True, text=True)
+        if r.returncode or 'unknown' in r.stderr: raise RuntimeError(r.stderr)
+    else:
+        subprocess.run(['espeak-ng', '-v', VOICE, '-s', str(rate), '-p', '40', '-g', '0', '-w', path, text], check=True)
     with wave.open(path) as w:
         sr = w.getframerate(); x = np.frombuffer(w.readframes(w.getnframes()), '<i2').astype(np.float32) / 32768
     # boshidagi/oxiridagi sukunatni kesish
@@ -72,11 +93,15 @@ with tempfile.TemporaryDirectory() as tmp:
             x, sr = synth(p, rate, tmpw)
             d = len(x) / sr
             if abs(d - slot) < 0.12: break
-            rate = int(np.clip(rate * d / slot, 120, 260))
+            rate = int(np.clip(rate * d / slot, 110, 240))
         tempo = np.clip(d / slot, 0.8, 1.25)   # qolgan farqni atempo bilan
-        y = ffmpeg_filter(x, sr, f'atempo={tempo:.4f},highpass=f=90,equalizer=f=250:t=q:w=1:g=-3,'
-                                 f'equalizer=f=3000:t=q:w=1.2:g=3,acompressor=threshold=0.1:ratio=3:attack=5:release=80')
+        y = ffmpeg_filter(x, sr, f'aresample={SR}:resampler=soxr,atempo={tempo:.4f},highpass=f=70,'
+                                 f'bass=g=4:f=140:w=0.8,equalizer=f=320:t=q:w=1.4:g=-2,'
+                                 f'equalizer=f=2800:t=q:w=1.4:g=2.5,treble=g=-2:f=7500,'
+                                 f'deesser=i=0.4,acompressor=threshold=0.08:ratio=3.5:attack=8:release=120:makeup=2,'
+                                 f'afade=t=in:d=0.03')
         y = y[:int(slot * SR)]
+        fo = int(0.06 * SR); y[-fo:] *= np.linspace(1, 0, fo)
         i = int(a * SR); track[i:i + len(y)] += y
         print(f'{k+1}. slot {slot:.2f}s  espeak -s {rate}  -> {len(y)/SR:.2f}s')
 

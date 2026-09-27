@@ -34,15 +34,18 @@ CTA’dagi ma’lumotlar posterdagi bilan aynan bir xil:
 `video/ict_academy_reklama_ovozli.mp4` — **o‘zbekcha diktor ovozi + musiqa** bilan tayyor versiya.
 `video/ict_academy_reklama.mp4` esa faqat musiqali versiya (boshqa ovoz qo‘yish uchun).
 
-Ovoz `voice.py` orqali offline **espeak-ng (uz)** sintezatori bilan yaratilgan:
-- inglizcha atamalar o‘zbekcha talaffuzda o‘qiladi (Data Science → “Deyta Sayens”,
-  ICT → “Ay-Si-Ti”, NLP → “En-El-Pi” va h.k.), ekrandagi matn esa o‘zgarmagan;
-- har bir gap tezligi `audio/ovoz_ssenariy.srt` dagi vaqt oralig‘iga aniq moslangan;
+Ovoz `voice.py` orqali offline yaratilgan: **MBROLA `tr1` erkak ovozi** (yozib olingan nutq
+bo‘laklaridan — difonlardan — yig‘iladi, shuning uchun formant sintezdan ancha silliqroq) + espeak-ng:
+- o‘zbekcha matn turkcha imloga o‘giriladi (sh→ş, ch→ç, o‘→ö, q→k, x→h, j→c), chunki turkcha
+  fonetika o‘zbekchaga juda yaqin; inglizcha atamalar o‘zbekcha talaffuzda (“Deyta Sayens”, “Ay-Si-Ti”);
+- ovoz “to‘liqroq” bo‘lishi uchun: past chastota iliqligi (+4 dB, 140 Hz), aniqlik (2.8 kHz),
+  de-esser, kompressor va yengil xona reverbi;
+- har bir gap `audio/ovoz_ssenariy.srt` dagi vaqtga aniq moslangan (≈160 so‘z/daqiqa, bir tekis temp);
 - lablar ovozning haqiqiy balandligiga ergashadi (`audio/ovoz_env.js`), pauzalarda og‘iz yopiladi;
 - ovoz paytida musiqa avtomatik pasayadi (sidechain ducking).
 
-espeak-ng robotik ohangda gapiradi. Professional reklama uchun ovozni jonli diktor yoki neyron TTS
-(ElevenLabs, Edge TTS `uz-UZ-SardorNeural`) bilan qayta yozish tavsiya etiladi:
+Bu baribir sintetik ovoz. Eng yaxshi natija uchun jonli diktor yoki neyron TTS (ElevenLabs,
+Edge TTS `uz-UZ-SardorNeural`) bilan qayta yozish mumkin:
 
 ```bash
 # 1) audio/ovoz_ssenariy.srt bo‘yicha yozib oling -> audio/ovoz.wav (0:00 dan boshlanadi)
@@ -59,7 +62,7 @@ qism), `node render.js` bilan videoni qayta render qiling.
 | `reklama.html` | Butun animatsiya (brauzerda ochib ko‘rish mumkin: play/pause va vaqt slayderi bor) |
 | `render.js` | HTML’ni kadrma-kadr MP4 ga render qiladi (Playwright + ffmpeg) |
 | `music.py` | Fon musiqasini yaratadi → `audio/fon_musiqa.wav` |
-| `voice.py` | espeak-ng bilan o‘zbekcha ovoz → `audio/ovoz.wav`, `audio/ovoz_env.js` |
+| `voice.py` | MBROLA + espeak-ng bilan o‘zbekcha ovoz → `audio/ovoz.wav`, `audio/ovoz_env.js` |
 | `ovoz_qoshish.sh` | Yozilgan ovozni musiqa bilan birga videoga qo‘shadi |
 | `audio/ovoz_ssenariy.srt` | Diktor uchun vaqtlari ko‘rsatilgan ssenariy / subtitr |
 | `fonts/` | Montserrat va JetBrains Mono shriftlari (lokal) |
