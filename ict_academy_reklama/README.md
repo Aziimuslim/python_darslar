@@ -4,10 +4,10 @@ Instagram Reels, Telegram, TikTok va YouTube Shorts uchun vertikal (9:16) reklam
 
 | Parametr | Qiymat |
 |---|---|
-| Fayl | `video/ict_academy_reklama.mp4` |
+| Fayl | `video/ict_academy_reklama_ovozli.mp4` |
 | O‘lcham | 1080 × 1920, 30 fps, H.264 |
 | Davomiyligi | 60 soniya |
-| Audio | Fon musiqasi (AAC 192 kbps) |
+| Audio | O‘zbekcha ovoz + fon musiqasi (`_ovozli.mp4`), AAC 192 kbps |
 
 ## Nima tayyor
 
@@ -29,30 +29,28 @@ Instagram Reels, Telegram, TikTok va YouTube Shorts uchun vertikal (9:16) reklam
 CTA’dagi ma’lumotlar posterdagi bilan aynan bir xil:
 `+998 (88) 333 88 09`, `+998 (20) 035 26 04`, `@ictacademy_official`, `ictacademy.uz/contact`.
 
-## ⚠️ Ovoz haqida
+## Ovoz
 
-Videoda hozircha **diktor ovozi yo‘q**, faqat musiqa va subtitrlar bor. Bu muhitda o‘zbekcha
-neyron TTS xizmatlariga (Microsoft Edge TTS, HuggingFace MMS-TTS) tarmoq kirishi
-bloklangan edi. Boshlovchining lablari esa ovoz qo‘yilishiga tayyor qilib animatsiya qilingan.
+`video/ict_academy_reklama_ovozli.mp4` — **o‘zbekcha diktor ovozi + musiqa** bilan tayyor versiya.
+`video/ict_academy_reklama.mp4` esa faqat musiqali versiya (boshqa ovoz qo‘yish uchun).
 
-Ovozni qo‘shish uchun:
+Ovoz `voice.py` orqali offline **espeak-ng (uz)** sintezatori bilan yaratilgan:
+- inglizcha atamalar o‘zbekcha talaffuzda o‘qiladi (Data Science → “Deyta Sayens”,
+  ICT → “Ay-Si-Ti”, NLP → “En-El-Pi” va h.k.), ekrandagi matn esa o‘zgarmagan;
+- har bir gap tezligi `audio/ovoz_ssenariy.srt` dagi vaqt oralig‘iga aniq moslangan;
+- lablar ovozning haqiqiy balandligiga ergashadi (`audio/ovoz_env.js`), pauzalarda og‘iz yopiladi;
+- ovoz paytida musiqa avtomatik pasayadi (sidechain ducking).
 
-1. `audio/ovoz_ssenariy.srt` bo‘yicha matnni yozib oling. Har bir gap SRT’dagi vaqt
-   oralig‘iga sig‘ishi kerak (energetik reklama tempi, taxminan 16–17 belgi/soniya). Buning uchun
-   diktor, ElevenLabs yoki `uz-UZ-SardorNeural` / `uz-UZ-MadinaNeural` (Edge TTS) ishlatish mumkin.
-2. Faylni `audio/ovoz.wav` qilib saqlang (0:00 dan boshlanadigan yagona trek).
-3. Ishga tushiring:
+espeak-ng robotik ohangda gapiradi. Professional reklama uchun ovozni jonli diktor yoki neyron TTS
+(ElevenLabs, Edge TTS `uz-UZ-SardorNeural`) bilan qayta yozish tavsiya etiladi:
 
-   ```bash
-   ./ovoz_qoshish.sh audio/ovoz.wav
-   ```
+```bash
+# 1) audio/ovoz_ssenariy.srt bo‘yicha yozib oling -> audio/ovoz.wav (0:00 dan boshlanadi)
+./ovoz_qoshish.sh audio/ovoz.wav      # -> video/ict_academy_reklama_ovozli.mp4
+```
 
-   Natija `video/ict_academy_reklama_ovozli.mp4` bo‘ladi. Ovoz paytida musiqa avtomatik
-   pasayadi (sidechain ducking), shuning uchun u diktorni bosib ketmaydi.
-
-Agar yozilgan ovoz tempi boshqacha chiqsa, `reklama.html` ichidagi `SPEECH` massividagi
-`a`/`b` vaqtlarini moslang va videoni qayta render qiling. Lablar va subtitrlar yangi
-vaqtlarga avtomatik moslashadi.
+Yangi ovozga lablarni ham moslash uchun `audio/ovoz_env.js` ni qayta hisoblab (voice.py oxiridagi
+qism), `node render.js` bilan videoni qayta render qiling.
 
 ## Fayllar
 
@@ -61,6 +59,7 @@ vaqtlarga avtomatik moslashadi.
 | `reklama.html` | Butun animatsiya (brauzerda ochib ko‘rish mumkin: play/pause va vaqt slayderi bor) |
 | `render.js` | HTML’ni kadrma-kadr MP4 ga render qiladi (Playwright + ffmpeg) |
 | `music.py` | Fon musiqasini yaratadi → `audio/fon_musiqa.wav` |
+| `voice.py` | espeak-ng bilan o‘zbekcha ovoz → `audio/ovoz.wav`, `audio/ovoz_env.js` |
 | `ovoz_qoshish.sh` | Yozilgan ovozni musiqa bilan birga videoga qo‘shadi |
 | `audio/ovoz_ssenariy.srt` | Diktor uchun vaqtlari ko‘rsatilgan ssenariy / subtitr |
 | `fonts/` | Montserrat va JetBrains Mono shriftlari (lokal) |
